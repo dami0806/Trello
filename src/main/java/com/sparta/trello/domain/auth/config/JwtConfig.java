@@ -9,15 +9,15 @@ import org.springframework.context.annotation.Configuration;
 public class JwtConfig {
 
     // 시크릿 키
-    @Value("${jwt.secret-key}")
+    @Value("${jwt.secret.key}")
     private String secretKey;
 
     // JWT Access 만료시간
-    @Value("${jwt.access-token-expiration-minutes}")
+    @Value("${jwt.token.expiration}")
     private long accessTokenExpiration;
 
     //JWT Refresh 만료시간
-    @Value("${jwt.refresh-token-expiration-minutes}")
+    @Value("${jwt.refresh.token.expiration}")
     private long refreshTokenExpiration;
 
     public String getSecretKey() {

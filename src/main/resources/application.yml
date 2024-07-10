@@ -32,5 +32,8 @@ jwt:
     token:
       expiration: 1209600000
 
+logging:
+  level:
+    org.springframework: DEBUG
 server:
   port: 8080

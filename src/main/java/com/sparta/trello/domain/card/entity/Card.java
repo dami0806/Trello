@@ -1,11 +1,14 @@
 package com.sparta.trello.domain.card.entity;
 
+import com.sparta.trello.domain.comment.entity.Comment;
 import com.sparta.trello.domain.common.entity.BaseEntity;
 import com.sparta.trello.domain.user.entity.User;
 import jakarta.persistence.*;
 import com.sparta.trello.domain.column.entity.TrelloColumn;
 
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,6 +27,9 @@ public class Card extends BaseEntity {
     @Column(nullable = false)
     private String description;
 
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User manager; // 카드 생성자
@@ -34,6 +40,7 @@ public class Card extends BaseEntity {
 
     private int position;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CardStatus status = CardStatus.ACTIVE;

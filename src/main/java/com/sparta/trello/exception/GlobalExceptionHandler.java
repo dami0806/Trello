@@ -2,6 +2,7 @@ package com.sparta.trello.exception;
 
 import com.sparta.trello.domain.auth.exception.UnauthorizedException;
 import com.sparta.trello.domain.card.exception.DatabaseAccessException;
+import com.sparta.trello.domain.comment.exception.CommentNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,5 +21,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DatabaseAccessException.class)
     public ResponseEntity<String> DatabaseAccessExceptionHandler(DatabaseAccessException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<String> CommentNotFoundExceptionHandler(CommentNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }

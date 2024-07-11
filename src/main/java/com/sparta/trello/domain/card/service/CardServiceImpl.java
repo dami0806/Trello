@@ -8,10 +8,18 @@ import com.sparta.trello.domain.card.mapper.CardMapper;
 import com.sparta.trello.domain.card.repository.CardRepository;
 import com.sparta.trello.domain.column.entity.TrelloColumn;
 import com.sparta.trello.domain.column.service.TrelloColumnService;
+import com.sparta.trello.domain.comment.dto.CommentResponse;
+import com.sparta.trello.domain.comment.entity.Comment;
+import com.sparta.trello.domain.comment.mapper.CommentMapper;
+import com.sparta.trello.domain.common.util.SecurityUtils;
 import com.sparta.trello.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +27,7 @@ public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final TrelloColumnService trelloColumnService;
     private final CardMapper cardMapper;
+    private final CommentMapper commentMapper;
 
     //card 생성
     @Override
@@ -72,10 +81,15 @@ public class CardServiceImpl implements CardService {
 
     // card 상세 보기 - 댓글까지 모두
     @Override
-    public CardResponse getCardById(Long cardId) {
+    public CardResponse getCardById(Long cardId, Pageable pageable) {
         Card card = findCard(cardId);
-        return cardMapper.toCardResponse(card);
+        Page<Comment> comments = cardRepository.findCommentsByCardId(cardId, pageable);
+        List<CommentResponse> commentResponses = commentMapper.toCommentResponseList(comments.getContent());
+        CardResponse cardResponse = cardMapper.toCardResponse(card);
+        cardResponse.updateComments(commentResponses);
+        return cardResponse;
     }
+
 
     // cardRepository save
     private void saveCard(Card card) {
@@ -86,7 +100,9 @@ public class CardServiceImpl implements CardService {
         }
     }
 
-    private Card findCard(Long cardId) {
+
+    @Override
+    public Card findCard(Long cardId) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new DatabaseAccessException("Card 데이터가 없습니다."));
         return card;
@@ -105,9 +121,9 @@ public class CardServiceImpl implements CardService {
         return trelloColumn;
     }
 
-
     private void validateCardOwner(Card card, User user) {
-        if (!card.getManager().equals(user)) {
+        User currentUser = SecurityUtils.getCurrentUser();
+        if (!card.getManager().equals(currentUser)) {
             throw new SecurityException("카드의 작성자만 가능한 기능입니다.");
         }
     }

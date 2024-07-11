@@ -38,4 +38,14 @@ public class CardController {
         return new ResponseEntity<>("카드 삭제하기 성공", HttpStatus.OK);
     }
 
+    //카드 위치 변경 (인덱스 상, TrelloColumn에서 변경)
+    @PutMapping("/{cardId}/position")
+    public ResponseEntity<String> updateCardPosition(@PathVariable Long cardId, @RequestParam int newPosition, @RequestParam Long newColumnId, @AuthenticationPrincipal AuthServiceImpl userDetails) {
+        cardService.updateCardPosition(cardId, newPosition, newColumnId, userDetails.getUser());
+        return new ResponseEntity<>("카드 위치 옮기기 성공", HttpStatus.OK);
+    }
+
+
+
+    // 카드 전체보기
 }

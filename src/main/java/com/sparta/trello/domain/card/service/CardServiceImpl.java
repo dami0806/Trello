@@ -8,6 +8,7 @@ import com.sparta.trello.domain.card.mapper.CardMapper;
 import com.sparta.trello.domain.card.repository.CardRepository;
 import com.sparta.trello.domain.column.entity.TrelloColumn;
 import com.sparta.trello.domain.column.service.TrelloColumnService;
+import com.sparta.trello.domain.common.util.SecurityUtils;
 import com.sparta.trello.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -86,7 +87,8 @@ public class CardServiceImpl implements CardService {
         }
     }
 
-    private Card findCard(Long cardId) {
+    @Override
+    public Card findCard(Long cardId) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new DatabaseAccessException("Card 데이터가 없습니다."));
         return card;
@@ -107,7 +109,8 @@ public class CardServiceImpl implements CardService {
 
 
     private void validateCardOwner(Card card, User user) {
-        if (!card.getManager().equals(user)) {
+        User currentUser = SecurityUtils.getCurrentUser();
+        if (!card.getManager().equals(currentUser)) {
             throw new SecurityException("카드의 작성자만 가능한 기능입니다.");
         }
     }

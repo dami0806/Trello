@@ -29,7 +29,7 @@ public class Board {
     private BoardStatus boardStatus;
 
     // Column Entity 생성 후 주석 해제
-    @OneToMany(mappedBy = "column")
+    @OneToMany(mappedBy = "board")
     private List<TrelloColumn> columnList = new ArrayList<>();
 
     @OneToMany(mappedBy = "boardInvitationId")

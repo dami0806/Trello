@@ -1,0 +1,7 @@
+## 컬럼 생성
+POST http://localhost:8080/boards/1/columns
+Content-Type: application/json
+
+{
+  "columns_title": "testColumns4"
+}

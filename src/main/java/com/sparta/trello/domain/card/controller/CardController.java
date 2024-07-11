@@ -45,7 +45,13 @@ public class CardController {
         return new ResponseEntity<>("카드 위치 옮기기 성공", HttpStatus.OK);
     }
 
-
+    // 카드 상세 보기
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/{cardId}")
+    public ResponseEntity<CardResponse> getCardById(@PathVariable Long cardId) {
+        CardResponse cardResponse = cardService.getCardById(cardId);
+        return new ResponseEntity<>(cardResponse, HttpStatus.OK);
+    }
 
     // 카드 전체보기
 }

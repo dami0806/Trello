@@ -1,7 +1,19 @@
-## 컬럼 생성
+### Variable
+
+### 컬럼 생성
 POST http://localhost:8080/boards/1/columns
 Content-Type: application/json
 
 {
-  "columns_title": "testColumns4"
+  "columns_title": "testColumns3"
 }
+
+### 컬럼 삭제
+DELETE http://localhost:8080/boards/1/columns/2
+Content-Type: application/json
+
+
+
+### 컬럼 수정
+PATCH http://localhost:8080/boards/1/columns/2/restore
+Content-Type: application/json

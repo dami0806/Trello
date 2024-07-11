@@ -1,8 +1,8 @@
-## 로그인
+### 로그인
 POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email" : "testemail@example.com",
-  "password" : "testpassword"
+  "email" : "testemail2@example.com",
+  "password" : "testpassword2"
 }

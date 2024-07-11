@@ -32,7 +32,7 @@ public class TrelloColumn extends BaseEntity {
 
 	private String title;
 
-	private Integer position;
+	private int position;
 
 	@ManyToOne
 	@JoinColumn(name = "board_id")
@@ -42,4 +42,13 @@ public class TrelloColumn extends BaseEntity {
 	@OneToMany(mappedBy = "trelloColumn", cascade = CascadeType.ALL)
 	private List<Card> cards;
 
+	private Boolean deleted = false;
+
+	public void softDelete() {
+		this.deleted = true;
+	}
+
+	public void restore() {
+		this.deleted = false;
+	}
 }

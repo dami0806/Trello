@@ -1,4 +1,4 @@
-## 보드 생성
+### 보드 생성
 POST http://localhost:8080/boards
 Content-Type: application/json
 

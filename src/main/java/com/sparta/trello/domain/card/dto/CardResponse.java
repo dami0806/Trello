@@ -1,11 +1,12 @@
 package com.sparta.trello.domain.card.dto;
 
+import com.sparta.trello.domain.comment.dto.CommentResponse;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Getter //Lombok
 @AllArgsConstructor
 public class CardResponse {
@@ -16,8 +17,12 @@ public class CardResponse {
     private int position;
 
     private Long trelloColumnId;
+    private List<CommentResponse> comments;
 
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
 
+    public void updateComments(List<CommentResponse> commentResponses) {
+        this.comments = commentResponses;
+    }
 }

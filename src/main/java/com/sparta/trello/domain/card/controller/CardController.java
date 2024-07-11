@@ -5,6 +5,7 @@ import com.sparta.trello.domain.card.dto.CardRequest;
 import com.sparta.trello.domain.card.dto.CardResponse;
 import com.sparta.trello.domain.card.service.CardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,10 +49,9 @@ public class CardController {
     // 카드 상세 보기
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{cardId}")
-    public ResponseEntity<CardResponse> getCardById(@PathVariable Long cardId) {
-        CardResponse cardResponse = cardService.getCardById(cardId);
+    public ResponseEntity<CardResponse> getCardById(@PathVariable Long cardId, Pageable pageable) {
+        CardResponse cardResponse = cardService.getCardById(cardId, pageable);
         return new ResponseEntity<>(cardResponse, HttpStatus.OK);
     }
 
-    // 카드 전체보기
 }

@@ -28,6 +28,7 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CommentStatus status = CommentStatus.ACTIVE;

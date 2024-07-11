@@ -27,4 +27,13 @@ public abstract class BaseEntity {
     protected void onUpdate() {
         this.updateAt = LocalDateTime.now();
     }
+
+    // Getter 추가
+    public LocalDateTime getCreateAt() {
+        return createAt;
+    }
+
+    public LocalDateTime getUpdateAt() {
+        return updateAt;
+    }
 }

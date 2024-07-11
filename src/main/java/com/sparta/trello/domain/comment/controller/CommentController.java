@@ -29,7 +29,7 @@ public class CommentController {
         CommentResponse commentResponse = commentService.updateComment(commentId, commentRequest);
         return new ResponseEntity<>(commentResponse, HttpStatus.OK);
     }
-    
+
     @DeleteMapping("/{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);

@@ -11,5 +11,4 @@ public interface CommentService {
     CommentResponse createComment(Long cardId, CommentRequest commentRequest);
     CommentResponse updateComment(Long commentId, CommentRequest commentRequest);
     void deleteComment(Long commentId);
-   // Page<CommentResponse> getCommentsByCardId(Long cardId, Pageable pageable);
 }

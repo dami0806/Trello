@@ -59,17 +59,11 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new CommentNotFoundException("해당 댓글을 찾을수 없습니다."));
     }
 
-//    @Override
-//    public Page<CommentResponse> getCommentsByCardId(Long cardId, Pageable pageable) {
-//        Card card = cardService.findCard(cardId);
-//        return commentRepository.findByCardAndStatus(card, CommentStatus.ACTIVE, pageable)
-//                .map(commentMapper::toCommentResponse);
-//    }
-
     private void validateCommentOwner(Comment comment) {
         User currentUser = SecurityUtils.getCurrentUser();
         if (!comment.getUser().equals(currentUser)) {
             throw new SecurityException("댓글의 작성자만 가능한 기능입니다.");
         }
     }
+
 }

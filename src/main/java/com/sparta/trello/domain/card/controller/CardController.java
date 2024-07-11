@@ -31,4 +31,11 @@ public class CardController {
         return new ResponseEntity<>(cardResponse, HttpStatus.OK);
     }
 
+    // 카드 삭제
+    @DeleteMapping("/{cardId}")
+    public ResponseEntity<String> deleteCard(@PathVariable Long cardId, @AuthenticationPrincipal AuthServiceImpl userDetails) {
+        cardService.deleteCard(cardId, userDetails.getUser());
+        return new ResponseEntity<>("카드 삭제하기 성공", HttpStatus.OK);
+    }
+
 }

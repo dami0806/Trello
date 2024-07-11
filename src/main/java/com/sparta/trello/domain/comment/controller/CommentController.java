@@ -29,7 +29,12 @@ public class CommentController {
         CommentResponse commentResponse = commentService.updateComment(commentId, commentRequest);
         return new ResponseEntity<>(commentResponse, HttpStatus.OK);
     }
-
+    
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
+        commentService.deleteComment(commentId);
+        return new ResponseEntity<>("댓글이 삭제되었습니다.", HttpStatus.OK);
+    }
 
 //    @GetMapping("/card/{cardId}")
 //    @PreAuthorize("isAuthenticated()")

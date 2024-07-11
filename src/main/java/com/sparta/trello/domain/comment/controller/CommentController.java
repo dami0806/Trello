@@ -24,6 +24,12 @@ public class CommentController {
         return new ResponseEntity<>(commentResponse, HttpStatus.CREATED);
     }
 
+    @PatchMapping("/{commentId}")
+    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
+        CommentResponse commentResponse = commentService.updateComment(commentId, commentRequest);
+        return new ResponseEntity<>(commentResponse, HttpStatus.OK);
+    }
+
 
 //    @GetMapping("/card/{cardId}")
 //    @PreAuthorize("isAuthenticated()")

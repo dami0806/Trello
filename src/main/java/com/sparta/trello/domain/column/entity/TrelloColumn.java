@@ -26,9 +26,8 @@ public class TrelloColumn {
 
 	private int position;
 
-	@ManyToOne
-	@JoinColumn(name = "board_id", nullable = false)
-	private Board board;
-
+	// @ManyToOne
+	// @JoinColumn(name = "board_id")
+	// private Board board;
 
 }

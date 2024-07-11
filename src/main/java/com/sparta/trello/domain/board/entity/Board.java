@@ -24,6 +24,7 @@ public class Board {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Enumerated(EnumType.STRING)
     private BoardStatus boardStatus;
 
     // Column Entity 생성 후 주석 해제
@@ -33,4 +34,9 @@ public class Board {
     @OneToMany(mappedBy = "boardInvitationId")
     private List<BoardInvitation> boardInvitationList = new ArrayList<>();
 
+    public Board(String boardName, String description, BoardStatus boardStatus) {
+        this.boardName = boardName;
+        this.description = description;
+        this.boardStatus = boardStatus;
+    }
 }

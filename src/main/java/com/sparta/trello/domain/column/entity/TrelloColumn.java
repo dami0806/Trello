@@ -2,6 +2,7 @@ package com.sparta.trello.domain.column.entity;
 
 import java.util.List;
 
+import com.sparta.trello.domain.board.entity.Board;
 import com.sparta.trello.domain.card.entity.Card;
 import com.sparta.trello.domain.common.entity.BaseEntity;
 
@@ -33,9 +34,9 @@ public class TrelloColumn extends BaseEntity {
 
 	private Integer position;
 
-	// @ManyToOne
-	// @JoinColumn(name = "board_id")
-	// private Board board;
+	@ManyToOne
+	@JoinColumn(name = "board_id")
+	private Board board;
 
 	// card와 매핑
 	@OneToMany(mappedBy = "trelloColumn", cascade = CascadeType.ALL)

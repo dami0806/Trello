@@ -24,4 +24,11 @@ public class CardController {
         return new ResponseEntity<>(cardResponse, HttpStatus.CREATED);
     }
 
+    // 카드 수정
+    @PutMapping("/{cardId}")
+    public ResponseEntity<CardResponse> updateCard(@PathVariable Long cardId, @RequestBody CardRequest cardRequest, @AuthenticationPrincipal AuthServiceImpl userDetails) {
+        CardResponse cardResponse = cardService.updateCard(cardId, cardRequest, userDetails.getUser());
+        return new ResponseEntity<>(cardResponse, HttpStatus.OK);
+    }
+
 }

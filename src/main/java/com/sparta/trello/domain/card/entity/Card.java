@@ -2,7 +2,7 @@ package com.sparta.trello.domain.card.entity;
 
 import com.sparta.trello.domain.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import com.sparta.trello.domain.trelloColumn.entity.TrelloColumn;
+import com.sparta.trello.domain.column.entity.TrelloColumn;
 
 import lombok.*;
 

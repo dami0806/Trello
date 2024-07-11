@@ -1,15 +1,23 @@
 package com.sparta.trello.domain.card.dto;
 
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+@Getter //Lombok
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CardResponse {
     private Long id;
     private String title;
-    private String content;
+    private String description;
     private String manager;
     private int position;
 
-    private Long columnId;
+    private Long trelloColumnId;
 
     private LocalDateTime createAt;
     private LocalDateTime updateAt;

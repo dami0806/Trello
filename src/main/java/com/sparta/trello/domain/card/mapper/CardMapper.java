@@ -5,12 +5,14 @@ import com.sparta.trello.domain.card.dto.CardResponse;
 import com.sparta.trello.domain.card.entity.Card;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
-@Mapper
+
+@Mapper(componentModel = "spring")
 public interface CardMapper {
-   // @Mapping(target = "id", ignore = ture)
-    Card toCardEntity(CardRequest dto);
 
-//    @Mapping(target = "columnId", source = "column.id")
-//    CardResponse toCardResponseDto(Card card);
+
+    @Mapping(source = "trelloColumn.id", target = "trelloColumnId")
+    CardResponse toCardResponse(Card card);
+    
 }

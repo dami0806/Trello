@@ -5,6 +5,6 @@ import lombok.Getter;
 @Getter
 public class CardRequest {
     private String title;
-    private String content;
-    private Long columnId;
+    private String description;
+    private Long trelloColumnId;
 }

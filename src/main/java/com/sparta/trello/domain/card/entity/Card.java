@@ -2,9 +2,9 @@ package com.sparta.trello.domain.card.entity;
 
 import com.sparta.trello.domain.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import com.sparta.trello.domain.trelloColumn.entity.TrelloColumn;
 
-import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Getter
@@ -26,16 +26,16 @@ public class Card extends BaseEntity {
     @Column(nullable = false)
     private String manager;
 
-//    @ManyToOne
-//    @JoinColumn(name = "column_id",nullable = false)
-//    private Column colum;
+    @ManyToOne
+    @JoinColumn(name = "trelloColumn_id",nullable = false)
+    private TrelloColumn trelloColumn;
 
     private int position;
 
     public void updatePosition(int position) {
         this.position = position;
     }
-//    public updateColumn(Column column) {
-//        this.column = column;
-//    }
+    public void updateColumn(TrelloColumn trelloColumn) {
+        this.trelloColumn = trelloColumn;
+    }
 }

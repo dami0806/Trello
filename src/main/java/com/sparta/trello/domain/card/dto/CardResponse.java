@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 @Getter //Lombok
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class CardResponse {
     private Long id;
     private String title;

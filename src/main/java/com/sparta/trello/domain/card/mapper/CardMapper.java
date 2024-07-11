@@ -14,5 +14,5 @@ public interface CardMapper {
 
     @Mapping(source = "trelloColumn.id", target = "trelloColumnId")
     CardResponse toCardResponse(Card card);
-    
+
 }

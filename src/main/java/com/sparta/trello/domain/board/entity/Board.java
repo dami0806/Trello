@@ -39,4 +39,9 @@ public class Board {
         this.description = description;
         this.boardStatus = boardStatus;
     }
+
+    public void update(String boardName, String description) {
+        this.boardName = boardName;
+        this.description = description;
+    }
 }

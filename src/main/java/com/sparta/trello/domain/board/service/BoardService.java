@@ -47,6 +47,15 @@ public class BoardService {
         return new BoardResponse(board.getBoardName(), board.getDescription());
     }
 
+    @Transactional
+    // 보드 삭제
+    public void deleteBoard(Long boardId) {
+
+        Board board = findBoardById(boardId);
+        board.softDelete();
+        boardRepository.save(board);
+    }
+
     private Board findBoardById(Long BoardId) {
 
         return boardRepository.findById(BoardId).orElseThrow(

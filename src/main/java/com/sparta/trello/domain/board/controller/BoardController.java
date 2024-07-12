@@ -29,4 +29,10 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @DeleteMapping("/boards/{boardId}")
+    public ResponseEntity<String> deleteComment(@PathVariable Long boardId) {
+        boardService.deleteBoard(boardId);
+        return new ResponseEntity<>("보드가 삭제 되었습니다.", HttpStatus.OK);
+    }
+
 }

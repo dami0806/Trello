@@ -1,5 +1,6 @@
 package com.sparta.trello.domain.board.entity;
 
+import com.sparta.trello.domain.column.entity.TrelloColumn;
 import com.sparta.trello.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -27,9 +28,8 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private BoardStatus boardStatus;
 
-    // Column Entity 생성 후 주석 해제
-//    @OneToMany(mappedBy = "column")
-//    private List<Column> columnList = new ArrayList<>();
+    @OneToMany(mappedBy = "board")
+    private List<TrelloColumn> columnList = new ArrayList<>();
 
     @OneToMany(mappedBy = "boardInvitationId")
     private List<BoardInvitation> boardInvitationList = new ArrayList<>();
@@ -43,5 +43,9 @@ public class Board {
     public void update(String boardName, String description) {
         this.boardName = boardName;
         this.description = description;
+    }
+
+    public void softDelete() {
+        this.boardStatus = BoardStatus.DELETE;
     }
 }

@@ -1,7 +1,7 @@
 package com.sparta.trello.domain.auth.controller;
 
-import com.sparta.trello.domain.auth.dto.RefreshTokenRequest;
 import com.sparta.trello.domain.auth.dto.request.LoginRequest;
+import com.sparta.trello.domain.auth.dto.request.RefreshTokenRequest;
 import com.sparta.trello.domain.auth.dto.request.SignupRequest;
 import com.sparta.trello.domain.auth.dto.response.LoginResponse;
 import com.sparta.trello.domain.auth.dto.response.TokenResponseDto;
@@ -46,7 +46,7 @@ public class AuthController {
 
         // 각 토큰을 별도의 헤더에 설정
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
+        headers.set("Authorization", accessToken);
         headers.set("Refresh-Token", refreshToken);
 
         return new ResponseEntity<>("로그인 성공", headers, HttpStatus.OK);

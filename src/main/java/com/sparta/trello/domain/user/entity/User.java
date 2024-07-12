@@ -1,18 +1,16 @@
 package com.sparta.trello.domain.user.entity;
 
-import com.sparta.trello.domain.board.entity.BoardInvitation;
+import com.sparta.trello.domain.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class User {
+public class User extends BaseEntity {
     // 기본키
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,10 +43,6 @@ public class User {
     @Column
     private String refreshToken;
 
-
-    @OneToMany
-    @JoinColumn(name =  "boardInvitationId")
-    private List<BoardInvitation> boardInvitationList= new ArrayList<>();
 
 
 

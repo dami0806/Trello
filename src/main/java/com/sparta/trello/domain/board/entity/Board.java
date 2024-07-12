@@ -36,8 +36,8 @@ public class Board {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "boardInvitationId")
-    private List<BoardInvitation> boardInvitationList = new ArrayList<>();
+//    @OneToMany(mappedBy = "boardInvitationId")
+//    private List<BoardInvitation> boardInvitationList = new ArrayList<>();
 
     public Board(String boardName, String description, BoardStatus boardStatus, User user) {
         this.boardName = boardName;

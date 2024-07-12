@@ -14,61 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class BoardService {
 
-    private final BoardRepository boardRepository;
+public interface BoardService {
+    public BoardResponse createBoard(BoardRequest boardRequest, String username);
 
-    // 보드 생성
-    public BoardResponse createBoard(BoardRequest boardRequest,String username) {
+    public boolean isBoardOwner(Long boardId, User user);
 
-        if (boardRequest.getBoardName() == null || boardRequest.getDescription() == null) {
-            throw new IllegalArgumentException("보드 이름, 한 줄 설명을 입력해주세요.");
-        }
+    public void deleteBoard(Long boardId);
 
-        String boardName = boardRequest.getBoardName();
-        String description = boardRequest.getDescription();
-
-        Board board = Board.builder()
-                .boardName(boardName)
-                .description(description)
-                .boardStatus(BoardStatus.ACTIVE)
-                .user(SecurityUtils.getCurrentUser())
-                .build();
-
-        boardRepository.save(board);
-
-        return new BoardResponse(board.getBoardName(), board.getDescription());
-    }
-
-    @Transactional
-    // 보드 수정
-    public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest) {
-
-        if (boardRequest.getBoardName() == null || boardRequest.getDescription() == null) {
-            throw new IllegalArgumentException("수정 할 보드 이름, 한 줄 설명을 입력해주세요.");
-        }
-
-        Board board = findBoardById(boardId);
-        board.update(boardRequest.getBoardName(), boardRequest.getDescription());
-
-        return new BoardResponse(board.getBoardName(), board.getDescription());
-    }
-
-    @Transactional
-    // 보드 삭제
-    public void deleteBoard(Long boardId) {
-
-        Board board = findBoardById(boardId);
-        board.softDelete();
-        boardRepository.save(board);
-    }
-
-    private Board findBoardById(Long BoardId) {
-
-        return boardRepository.findById(BoardId).orElseThrow(
-                () -> new IllegalArgumentException("해당 보드를 찾을 수 없습니다.")
-        );
-    }
 }

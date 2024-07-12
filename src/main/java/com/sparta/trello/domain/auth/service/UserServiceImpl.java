@@ -6,11 +6,14 @@ import com.sparta.trello.domain.auth.dto.response.LoginResponse;
 import com.sparta.trello.domain.auth.dto.response.TokenResponseDto;
 import com.sparta.trello.domain.auth.util.JwtUtil;
 import com.sparta.trello.domain.user.entity.User;
+
 import com.sparta.trello.domain.user.entity.UserRole;
 import com.sparta.trello.domain.user.entity.UserStatus;
 import com.sparta.trello.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +49,7 @@ public class UserServiceImpl implements UserService {
                 .email(email)
                 .password(encodedPassword)
                 .userStatus(UserStatus.ACTIVE)
-                .userRole(UserRole.USER)
+                .userRole(signupRequest.getUserRole())
                 .build();
 
         userRepository.save(user);
@@ -147,6 +150,11 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
+
+    public User getUserByName(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
 //    @Override
 //    public User getCurrentAdmin() {
 //        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

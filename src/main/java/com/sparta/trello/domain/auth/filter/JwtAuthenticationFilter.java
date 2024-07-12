@@ -1,4 +1,4 @@
-package com.sparta.trello.domain.auth.config.filter;
+package com.sparta.trello.domain.auth.filter;
 
 import com.sparta.trello.domain.auth.service.UserDetailsServiceImpl;
 import com.sparta.trello.domain.auth.util.JwtUtil;
@@ -32,7 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsServiceImpl userDetailsService;
     private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService, UserRepository userRepository) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService,
+                                   UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;

@@ -5,6 +5,8 @@ import com.sparta.trello.domain.auth.dto.request.SignupRequest;
 import com.sparta.trello.domain.auth.dto.response.LoginResponse;
 import com.sparta.trello.domain.auth.dto.response.TokenResponseDto;
 import com.sparta.trello.domain.user.entity.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public interface UserService {
     // 회원가입
@@ -23,5 +25,8 @@ public interface UserService {
     void withdraw(String userId, String password, String accessToken, String refreshToken);
 
     User getUserById(Long id);
-}
+
+
+    User getUserByName(String username);
+    }
 

@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -25,12 +26,18 @@ public class User {
     private String refreshToken;
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
-    @Enumerated(EnumType.STRING)
-    private UserRoleEnum role;
 
     @OneToOne
     @JoinColumn(name = "auth_id")
     private Auth auth;
+
+//    @ManyToMany
+//    @JoinTable(
+//            name = "user_role_matches",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "role")
+//    )
+//    private List<UserRole> userRoles;
 
     @OneToMany
     @JoinColumn(name =  "boardInvitationId")

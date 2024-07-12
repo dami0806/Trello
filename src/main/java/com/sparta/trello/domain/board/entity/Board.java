@@ -1,5 +1,6 @@
 package com.sparta.trello.domain.board.entity;
 
+import com.sparta.trello.domain.column.entity.TrelloColumn;
 import com.sparta.trello.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -27,8 +28,9 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private BoardStatus boardStatus;
 
-//    @OneToMany(mappedBy = "board")
-//    private List<TrelloColumn> columnList = new ArrayList<>();
+    // Column Entity 생성 후 주석 해제
+    @OneToMany(mappedBy = "board")
+    private List<TrelloColumn> columnList = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

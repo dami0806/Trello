@@ -1,9 +1,4 @@
 package com.sparta.trello.domain.column.dto.request;
 
-import lombok.Getter;
-
-@Getter
-public class TrelloCreateColumnRequestDto {
-	private String title;
-	// private Long boardId;
+public record TrelloCreateColumnRequestDto(String columns_title, Long boardId, int newPosition) {
 }

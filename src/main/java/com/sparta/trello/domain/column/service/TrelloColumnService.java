@@ -1,7 +1,6 @@
 package com.sparta.trello.domain.column.service;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.trello.domain.column.dto.request.TrelloCreateColumnRequestDto;
 import com.sparta.trello.domain.column.entity.TrelloColumn;

@@ -7,13 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.trello.domain.board.entity.Board;
 import com.sparta.trello.domain.board.repository.BoardRepository;
+import com.sparta.trello.domain.card.exception.DatabaseAccessException;
 import com.sparta.trello.domain.column.dto.request.TrelloCreateColumnRequestDto;
 import com.sparta.trello.domain.column.dto.response.TrelloColumnResponseDto;
 import com.sparta.trello.domain.column.entity.TrelloColumn;
 import com.sparta.trello.domain.column.entity.TrelloColumnStatus;
 import com.sparta.trello.domain.column.repository.TrelloColumnRepository;
-import com.sparta.trello.exception.BusinessException;
-import com.sparta.trello.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,12 +30,12 @@ public class TrelloColumnServiceImpl implements TrelloColumnService {
 	@Override
 	public ResponseEntity<?> createColumn(TrelloCreateColumnRequestDto requestDto) {
 		columnRepository.findByTitle(requestDto.columns_title()).ifPresent(trelloColumn -> {
-			throw new BusinessException(ErrorCode.COLUMN_ALREADY_EXISTS);
+			throw new DatabaseAccessException("COLUMN ALREADY EXISTS");
 		});
 
 		Optional<Board> optionalBoard = boardRepository.findById(requestDto.boardId());
 		Board board = optionalBoard.orElseThrow(
-			() -> new BusinessException(ErrorCode.BOARD_NOT_FOUND)
+			() -> new DatabaseAccessException("BOARD NOT FOUND")
 		);
 
 		int position = requestDto.newPosition();
@@ -66,14 +65,9 @@ public class TrelloColumnServiceImpl implements TrelloColumnService {
 	@Transactional
 	@Override
 	public ResponseEntity<?> deleteColumn(Long boardId, Long columnId) {
-		TrelloColumn column = columnRepository.findById(columnId).orElseThrow(
-			() -> new BusinessException(ErrorCode.BOARD_NOT_FOUND)
-		);
-		if (!Objects.equals(column.getBoard().getBoardId(), boardId)) {
-			throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
-		}
+		TrelloColumn column = checkBoardAndColumn(boardId, columnId, true);
 		if (column.getStatus() == TrelloColumnStatus.DELETED) {
-			throw new BusinessException(ErrorCode.COLUMN_ALREADY_DELETED);
+			throw new DatabaseAccessException("COLUMN ALREADY DELETED");
 		}
 		column.softDelete();
 		columnRepository.save(column);
@@ -83,14 +77,9 @@ public class TrelloColumnServiceImpl implements TrelloColumnService {
 	@Transactional
 	@Override
 	public ResponseEntity<?> restoreColumn(Long boardId, Long columnId) {
-		TrelloColumn column = columnRepository.findById(columnId).orElseThrow(
-			() -> new BusinessException(ErrorCode.BOARD_NOT_FOUND)
-		);
-		if (!Objects.equals(column.getBoard().getBoardId(), boardId)) {
-			throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
-		}
+		TrelloColumn column = checkBoardAndColumn(boardId, columnId, true);
 		if (column.getStatus() == TrelloColumnStatus.ACTIVE) {
-			throw new BusinessException(ErrorCode.COLUMN_ALREADY_RESTORED);
+			throw new DatabaseAccessException("COLUMN ALREADY RESTORED");
 		}
 		column.restore();
 		columnRepository.save(column);
@@ -100,16 +89,11 @@ public class TrelloColumnServiceImpl implements TrelloColumnService {
 	@Transactional
 	@Override
 	public ResponseEntity<?> moveColumn(Long boardId, Long columnId, int newPosition) {
-		Board board = boardRepository.findById(boardId).orElseThrow(
-			() -> new BusinessException(ErrorCode.BOARD_NOT_FOUND)
-		);
+		checkBoardAndColumn(boardId, columnId, false);
 		TrelloColumn column = columnRepository.findById(columnId).orElseThrow(
-			() -> new BusinessException(ErrorCode.COLUMN_NOT_FOUND)
+			() -> new DatabaseAccessException("COLUMN NOT FOUND")
 		);
-		if (!Objects.equals(column.getBoard().getBoardId(), boardId)) {
-			throw new BusinessException(ErrorCode.UNAUTHORIZED_USER);
-		}
-		List<TrelloColumn> columns = columnRepository.findByBoardAndStatusOrderByPosition(board, TrelloColumnStatus.ACTIVE);
+		List<TrelloColumn> columns = columnRepository.findByBoardAndStatusOrderByPosition(boardRepository.findById(boardId).get(), TrelloColumnStatus.ACTIVE);
 		TrelloColumn targetColumn = null;
 
 		for (TrelloColumn col : columns) {
@@ -138,5 +122,21 @@ public class TrelloColumnServiceImpl implements TrelloColumnService {
 
 	private int getNextPosition(Board board) {
 		return columnRepository.countByBoardAndStatus(board, TrelloColumnStatus.ACTIVE);
+	}
+
+	private TrelloColumn checkBoardAndColumn(Long boardId, Long columnId, boolean checkColumn) {
+		Board board = boardRepository.findById(boardId).orElseThrow(
+			() -> new DatabaseAccessException("BOARD NOT FOUND")
+		);
+		TrelloColumn column = columnRepository.findById(columnId).orElseThrow(
+			() -> new DatabaseAccessException("COLUMN NOT FOUND")
+		);
+		if (!Objects.equals(column.getBoard().getBoardId(), boardId)) {
+			throw new DatabaseAccessException("UNAUTHORIZED USER");
+		}
+		if (checkColumn) {
+			return column;
+		}
+		return null;
 	}
 }

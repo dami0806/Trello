@@ -1,6 +1,5 @@
 package com.sparta.trello.domain.column.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sparta.trello.domain.auth.service.UserDetailsServiceImpl;
+import com.sparta.trello.domain.auth.exception.UnauthorizedException;
 import com.sparta.trello.domain.column.dto.request.TrelloCreateColumnRequestDto;
 import com.sparta.trello.domain.column.service.TrelloColumnServiceImpl;
 
@@ -25,14 +24,17 @@ import lombok.RequiredArgsConstructor;
 public class TrelloColumnController {
 	private final TrelloColumnServiceImpl trelloColumnService;
 
+	private void validdateUserDetails(UserDetails userDetails) {
+		if (userDetails == null) {
+			throw new UnauthorizedException("인증이 필요합니다.");
+		}
+	}
+
 	@PostMapping
 	public ResponseEntity<?> createColumn(@PathVariable Long boardId,
 		                                  @RequestBody TrelloCreateColumnRequestDto requestDto,
 		                                  @AuthenticationPrincipal UserDetails userDetails) {
-		if (userDetails == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증이 필요합니다.");
-		}
-
+		validdateUserDetails(userDetails);
 		TrelloCreateColumnRequestDto updatedRequestDto = new TrelloCreateColumnRequestDto(requestDto.columns_title(), boardId, requestDto.newPosition());
 		return trelloColumnService.createColumn(updatedRequestDto);
 	}
@@ -40,20 +42,14 @@ public class TrelloColumnController {
 	@DeleteMapping("/{columnId}")
 	public ResponseEntity<?> deleteColumn(@PathVariable Long boardId, @PathVariable Long columnId,
 		                                  @AuthenticationPrincipal UserDetails userDetails) {
-		if (userDetails == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증이 필요합니다.");
-		}
-
+		validdateUserDetails(userDetails);
 		return trelloColumnService.deleteColumn(boardId, columnId);
 	}
 
 	@PatchMapping("/{columnId}/restore")
 	public ResponseEntity<?> restoreColumn(@PathVariable Long boardId, @PathVariable Long columnId,
 									       @AuthenticationPrincipal UserDetails userDetails) {
-		if (userDetails == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증이 필요합니다.");
-		}
-
+		validdateUserDetails(userDetails);
 		return trelloColumnService.restoreColumn(boardId, columnId);
 	}
 
@@ -61,10 +57,7 @@ public class TrelloColumnController {
 	public ResponseEntity<?> moveColumn(@PathVariable Long boardId, @PathVariable Long columnId,
 								      	@RequestParam int newPosition,
 								    	@AuthenticationPrincipal UserDetails userDetails) {
-		if (userDetails == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증이 필요합니다.");
-		}
-
+		validdateUserDetails(userDetails);
 		return trelloColumnService.moveColumn(boardId, columnId, newPosition);
 	}
 }

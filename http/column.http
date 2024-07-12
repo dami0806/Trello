@@ -8,8 +8,8 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "columns_title": "testColumns2",
-  "newPosition": 1
+  "columns_title": "testColumns3",
+  "newPosition": 3
 }
 
 ### 컬럼 삭제

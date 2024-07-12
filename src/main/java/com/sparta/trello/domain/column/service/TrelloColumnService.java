@@ -1,21 +1,18 @@
 package com.sparta.trello.domain.column.service;
 
+import org.springframework.http.ResponseEntity;
+
+import com.sparta.trello.domain.column.dto.request.TrelloCreateColumnRequestDto;
 import com.sparta.trello.domain.column.entity.TrelloColumn;
-import org.springframework.stereotype.Service;
 
-import com.sparta.trello.domain.column.repository.TrelloColumnRepository;
+public interface TrelloColumnService {
+	ResponseEntity<?> createColumn(TrelloCreateColumnRequestDto requestDto);
 
-import lombok.RequiredArgsConstructor;
+	ResponseEntity<?> deleteColumn(Long boardId, Long columnId);
 
-@Service
-@RequiredArgsConstructor
-public class TrelloColumnService {
-	private TrelloColumnRepository columnRepository;
+	ResponseEntity<?> restoreColumn(Long boardId, Long columnId);
 
-	//컬럼 id 찾기
-	public TrelloColumn findById(Long id) {
-		return columnRepository.findById(id).orElse(null);
-	}
+	ResponseEntity<?> moveColumn(Long boardId, Long ColumnId, int newPosition);
 
-
+	TrelloColumn findById(Long id);
 }

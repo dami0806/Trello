@@ -1,9 +1,14 @@
 package com.sparta.trello.domain.user.entity;
 
 import com.sparta.trello.domain.auth.entity.Auth;
+import com.sparta.trello.domain.board.entity.Board;
+import com.sparta.trello.domain.board.entity.BoardInvitation;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
@@ -24,6 +29,10 @@ public class User {
     @OneToOne
     @JoinColumn(name = "auth_id")
     private Auth auth;
+
+    @OneToMany
+    @JoinColumn(name =  "boardInvitationId")
+    private List<BoardInvitation> boardInvitationList= new ArrayList<>();
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;

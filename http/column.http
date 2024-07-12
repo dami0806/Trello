@@ -1,0 +1,32 @@
+### Variables
+@boardId = 1
+@columnId = 2
+
+### 컬럼 생성
+POST http://localhost:8080/boards/{{boardId}}/columns
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "columns_title": "testColumns3",
+  "newPosition": 3
+}
+
+### 컬럼 삭제
+DELETE http://localhost:8080/boards/{{boardId}}/columns/{{columnId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+
+
+### 컬럼 복구
+PATCH http://localhost:8080/boards/{{boardId}}/columns/{{columnId}}/restore
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+
+
+### 컬럼 위치 이동
+PATCH http://localhost:8080/boards/{{boardId}}/columns/{{columnId}}/position?newPosition=1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}

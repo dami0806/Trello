@@ -15,6 +15,10 @@ public class BoardInvitation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long boardInvitationId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ManagerStatus managerStatus;
+
     @ManyToOne
     private User user;
 

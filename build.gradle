@@ -52,6 +52,12 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // mapstruct
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
 }
 
 tasks.named('test') {

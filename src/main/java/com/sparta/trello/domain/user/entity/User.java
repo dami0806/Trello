@@ -24,6 +24,8 @@ public class User {
     private String refreshToken;
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
+    @Enumerated(EnumType.STRING)
+    private UserRoleEnum role;
 
     @OneToOne
     @JoinColumn(name = "auth_id")

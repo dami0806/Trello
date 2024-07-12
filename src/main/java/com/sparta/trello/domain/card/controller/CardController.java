@@ -53,5 +53,4 @@ public class CardController {
         CardResponse cardResponse = cardService.getCardById(cardId, pageable);
         return new ResponseEntity<>(cardResponse, HttpStatus.OK);
     }
-
 }

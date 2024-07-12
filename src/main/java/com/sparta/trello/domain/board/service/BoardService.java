@@ -6,6 +6,7 @@ import com.sparta.trello.domain.board.dto.response.BoardResponse;
 import com.sparta.trello.domain.board.entity.Board;
 import com.sparta.trello.domain.board.entity.BoardStatus;
 import com.sparta.trello.domain.board.repository.BoardRepository;
+import com.sparta.trello.domain.common.util.SecurityUtils;
 import com.sparta.trello.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
 
     // 보드 생성
-    public BoardResponse createBoard(BoardRequest boardRequest, User user) {
+    public BoardResponse createBoard(BoardRequest boardRequest,String username) {
 
         if (boardRequest.getBoardName() == null || boardRequest.getDescription() == null) {
             throw new IllegalArgumentException("보드 이름, 한 줄 설명을 입력해주세요.");
@@ -29,7 +30,13 @@ public class BoardService {
         String boardName = boardRequest.getBoardName();
         String description = boardRequest.getDescription();
 
-        Board board = new Board(boardName, description, BoardStatus.ACTIVE, user);
+        Board board = Board.builder()
+                .boardName(boardName)
+                .description(description)
+                .boardStatus(BoardStatus.ACTIVE)
+                .user(SecurityUtils.getCurrentUser())
+                .build();
+
         boardRepository.save(board);
 
         return new BoardResponse(board.getBoardName(), board.getDescription());

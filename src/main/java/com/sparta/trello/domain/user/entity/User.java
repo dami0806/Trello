@@ -1,15 +1,11 @@
 package com.sparta.trello.domain.user.entity;
 
-import com.sparta.trello.domain.auth.entity.Auth;
-import com.sparta.trello.domain.board.entity.Board;
 import com.sparta.trello.domain.board.entity.BoardInvitation;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Builder
@@ -17,43 +13,76 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class User {
+    // 기본키
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    // 이메일
+    @Column(nullable = false, unique = true)
     private String email;
-    private String name;
-    private String refreshToken;
+
+    // 비밀번호
+    @Column(nullable = false)
+    private String password;
+
+    // 이름
+    @Column(nullable = false)
+    private String username;
+
+    // 사용자 상태
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserStatus userStatus;
 
-    @OneToOne
-    @JoinColumn(name = "auth_id")
-    private Auth auth;
+    // 사용자 역할
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole userRole;
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "user_role_matches",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "role")
-//    )
-//    private List<UserRole> userRoles;
+    // refreshToken
+    @Column
+    private String refreshToken;
+
 
     @OneToMany
     @JoinColumn(name =  "boardInvitationId")
     private List<BoardInvitation> boardInvitationList= new ArrayList<>();
 
+
+
+    // 로그인 상태 변경
+    public void login() {
+        this.userStatus = UserStatus.ACTIVE;
+    }
+
+    // 로그아웃 (UserStatus 변경)
+    public void logout() {
+        this.userStatus = UserStatus.LOGOUT; // userStatus를 LOGOUT으로 변경
+    }
+
+    // 탈퇴 (UserStatus 변경)
+    public void withdraw() {
+        this.userStatus = UserStatus.WITHDRAWN;
+    }
+
+    // 리프레시 토큰 업데이트
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public void updateUserRole(UserRole userRole) {
+        this.userRole = userRole;
     }
 
     public void updateUserStatus(UserStatus userStatus) {
         this.userStatus = userStatus;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        UserDetails userDetails = (UserDetails) o;
-        return email.equals(userDetails.getUsername());
+    // 토큰 삭제
+    public void clearRefreshToken() {
+        this.refreshToken = null;
     }
+
 }

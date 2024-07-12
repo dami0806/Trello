@@ -17,7 +17,7 @@ public interface CardMapper {
 
     @Mappings({
             @Mapping(source = "trelloColumn.id", target = "trelloColumnId"),
-            @Mapping(source = "manager.name", target = "manager"),
+            @Mapping(source = "manager.id", target = "manager"),
             @Mapping(source = "createAt", target = "createAt"),
             @Mapping(source = "updateAt", target = "updateAt"),
             @Mapping(target = "comments", expression = "java(mapComments(card.getComments()))")
@@ -32,7 +32,7 @@ public interface CardMapper {
                 .map(comment -> new CommentResponse(
                         comment.getId(),
                         comment.getContent(),
-                        comment.getUser().getName(),
+                        comment.getUser().getUsername(),
                         comment.getCreateAt(),
                         comment.getUpdateAt()))
                 .collect(java.util.stream.Collectors.toList());

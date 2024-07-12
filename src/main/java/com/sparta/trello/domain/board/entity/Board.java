@@ -3,16 +3,16 @@ package com.sparta.trello.domain.board.entity;
 import com.sparta.trello.domain.column.entity.TrelloColumn;
 import com.sparta.trello.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "board")
+@Builder
+@AllArgsConstructor
 public class Board {
 
     @Id

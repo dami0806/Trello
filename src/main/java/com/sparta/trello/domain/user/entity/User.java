@@ -3,6 +3,7 @@ package com.sparta.trello.domain.user.entity;
 import com.sparta.trello.domain.auth.entity.Auth;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Builder
@@ -30,5 +31,11 @@ public class User {
 
     public void updateUserStatus(UserStatus userStatus) {
         this.userStatus = userStatus;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        UserDetails userDetails = (UserDetails) o;
+        return email.equals(userDetails.getUsername());
     }
 }

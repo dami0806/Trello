@@ -5,6 +5,7 @@ import com.sparta.trello.domain.board.entity.Board;
 import com.sparta.trello.domain.board.entity.BoardInvitation;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,5 +40,11 @@ public class User {
 
     public void updateUserStatus(UserStatus userStatus) {
         this.userStatus = userStatus;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        UserDetails userDetails = (UserDetails) o;
+        return email.equals(userDetails.getUsername());
     }
 }

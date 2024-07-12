@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sparta.trello.domain.column.dto.request.TrelloCreateColumnRequestDto;
@@ -22,7 +23,7 @@ public class TrelloColumnController {
 
 	@PostMapping
 	public ResponseEntity<?> createColumn(@PathVariable Long boardId, @RequestBody TrelloCreateColumnRequestDto requestDto) {
-		TrelloCreateColumnRequestDto updatedRequestDto = new TrelloCreateColumnRequestDto(requestDto.columns_title(), boardId);
+		TrelloCreateColumnRequestDto updatedRequestDto = new TrelloCreateColumnRequestDto(requestDto.columns_title(), boardId, requestDto.newPosition());
 		return trelloColumnService.createColumn(updatedRequestDto);
 	}
 
@@ -34,5 +35,10 @@ public class TrelloColumnController {
 	@PatchMapping("/{columnId}/restore")
 	public ResponseEntity<?> restoreColumn(@PathVariable Long boardId, @PathVariable Long columnId) {
 		return trelloColumnService.restoreColumn(boardId, columnId);
+	}
+
+	@PatchMapping("/{columnId}/position")
+	public ResponseEntity<?> moveColumn(@PathVariable Long boardId, @PathVariable Long columnId, @RequestParam int newPosition) {
+		return trelloColumnService.moveColumn(boardId, columnId, newPosition);
 	}
 }

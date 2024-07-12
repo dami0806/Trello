@@ -4,6 +4,7 @@ import com.sparta.trello.domain.auth.dto.request.LoginRequestDto;
 import com.sparta.trello.domain.auth.dto.request.SignupRequestDto;
 import com.sparta.trello.domain.auth.dto.response.LoginResponseDto;
 import com.sparta.trello.domain.auth.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,20 @@ public class AuthController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(response);
+    }
+
+    @PatchMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        // Authorization 헤더에서 액세스 토큰 추출
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String accessToken = authHeader.substring(7); // "Bearer "를 제거
+
+            // 서비스 호출
+            authService.logout(accessToken);
+            return ResponseEntity.ok("로그아웃 성공했습니다.");
+        }
+        return ResponseEntity.badRequest().body("유효하지 않은 토큰입니다.");
     }
 
 }

@@ -10,6 +10,7 @@ import com.sparta.trello.domain.auth.repository.AuthRepository;
 import com.sparta.trello.domain.auth.util.JwtUtil;
 import com.sparta.trello.domain.user.entity.User;
 import com.sparta.trello.domain.user.entity.UserStatus;
+import com.sparta.trello.domain.user.repository.UserRepository;
 import com.sparta.trello.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.sparta.trello.domain.auth.util.JwtUtil.getUsernameFromToken;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -27,6 +30,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
     @Override
     public User update(UUID userId, String newEmail, String newUserId) {
@@ -65,8 +69,10 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtUtil.createRefreshToken(auth.getName());
         String refreshToken = jwtUtil.createRefreshToken(auth.getName());
 
+
         User user = auth.getUser();
         user.updateRefreshToken(refreshToken);
+        user.updateUserStatus(UserStatus.ACTIVE);
         userService.save(user);
 
         return new LoginResponseDto(token, refreshToken);
@@ -79,5 +85,21 @@ public class AuthServiceImpl implements AuthService {
         Optional<Auth> authOptional = authRepository.findByName(username);
         return authOptional.map(Auth::getUser)
                 .orElseThrow(() -> new UnauthorizedException("사용자를 찾을 수 없습니다."));
+    }
+
+    @Override
+    public void logout(String accessToken){
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            throw new IllegalArgumentException("Access token이 null이거나 비어있습니다.");
+        }
+
+        String username = JwtUtil.getUsernameFromToken(accessToken);
+        User user = userRepository.findByName(username)
+                        .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+
+        user.updateUserStatus(UserStatus.LOGOUT);
+        user.updateRefreshToken(null);
+        userRepository.save(user);
     }
 }

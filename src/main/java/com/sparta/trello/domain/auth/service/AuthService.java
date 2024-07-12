@@ -17,6 +17,10 @@ public interface AuthService {
     // 로그인
     LoginResponseDto login(LoginRequestDto loginRequest);
 
+    //로그아웃
+    void logout(String accessToken);
+
+
     User getUser();
 
 }

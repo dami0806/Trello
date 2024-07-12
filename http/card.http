@@ -1,4 +1,4 @@
-### Variable
+### Variables
 
 ### 카드 생성
 POST http://localhost:8080/api/cards

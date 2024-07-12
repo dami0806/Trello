@@ -12,6 +12,7 @@ import com.sparta.trello.domain.user.entity.User;
 import com.sparta.trello.domain.user.entity.UserStatus;
 import com.sparta.trello.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -69,5 +70,14 @@ public class AuthServiceImpl implements AuthService {
         userService.save(user);
 
         return new LoginResponseDto(token, refreshToken);
+    }
+
+    // 유저 찾기
+    @Override
+    public User getUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<Auth> authOptional = authRepository.findByName(username);
+        return authOptional.map(Auth::getUser)
+                .orElseThrow(() -> new UnauthorizedException("사용자를 찾을 수 없습니다."));
     }
 }

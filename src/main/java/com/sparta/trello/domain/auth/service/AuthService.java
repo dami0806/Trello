@@ -17,4 +17,6 @@ public interface AuthService {
     // 로그인
     LoginResponseDto login(LoginRequestDto loginRequest);
 
+    User getUser();
+
 }

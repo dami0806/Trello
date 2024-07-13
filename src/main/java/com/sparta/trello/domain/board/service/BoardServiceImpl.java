@@ -91,6 +91,20 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.isBoardManager(boardId, user);
     }
 
+    // 보드 멤버인지 확인
+    @Override
+    public boolean isBoardMember(Long boardId, User user) {
+        return boardRepository.isBoardMember(boardId, user);
+    }
+
+    // 사용자가 보드의 멤버이거나 매니저인지 확인
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isBoardMemberOrManager(Long boardId, String username) {
+        User user = userService.getUserByName(username);
+        return isBoardManager(boardId, user) || isBoardMember(boardId, user);
+    }
+
     // 보드 찾음
     @Override
     @Transactional(readOnly = true)
@@ -101,7 +115,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public void inviteUserToBoard(Long boardId,BoardInvitationRequest invitationRequest, String username) {
+    public void inviteUserToBoard(Long boardId, BoardInvitationRequest invitationRequest, String username) {
         User currentUser = getCurrentUser(username);
         Board board = findBoardById(boardId);
 
@@ -111,5 +125,7 @@ public class BoardServiceImpl implements BoardService {
 
         invitationService.inviteUserToBoard(userToInvite, board, invitationRequest.getRole()); // Manager, Member둘다 가능
     }
+
+
 }
 

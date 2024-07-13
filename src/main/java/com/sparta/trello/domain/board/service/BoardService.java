@@ -29,5 +29,6 @@ public interface BoardService {
 
     void inviteUserToBoard(Long boardId, BoardInvitationRequest invitationRequest, String username);
 
-
+    boolean isBoardMember(Long boardId, User user);
+    boolean isBoardMemberOrManager(Long boardId, String username);
 }

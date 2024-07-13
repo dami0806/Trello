@@ -30,7 +30,7 @@ public class TrelloColumnServiceImpl implements TrelloColumnService {
 	@Override
 	public ResponseEntity<?> createColumn(TrelloCreateColumnRequestDto requestDto) {
 		columnRepository.findByTitle(requestDto.columns_title()).ifPresent(trelloColumn -> {
-			throw new DatabaseAccessException("COLUMN ALREADY EXISTS");
+			throw new DatabaseAccessException("컬럼이름이 중복됩니다.");
 		});
 
 		Optional<Board> optionalBoard = boardRepository.findById(requestDto.boardId());

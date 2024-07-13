@@ -1,5 +1,6 @@
 package com.sparta.trello.domain.common.util;
 
+import com.sparta.trello.domain.auth.exception.UnauthorizedException;
 import com.sparta.trello.domain.user.entity.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,12 @@ public class SecurityUtils {
             return ((UserDetails) principal).getUsername();
         } else {
             return principal.toString();
+        }
+    }
+
+    public static void validdateUserDetails(UserDetails userDetails) {
+        if (userDetails == null) {
+            throw new UnauthorizedException("인증이 필요합니다.");
         }
     }
 }

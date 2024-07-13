@@ -5,6 +5,7 @@ import com.sparta.trello.domain.board.dto.request.BoardRequest;
 import com.sparta.trello.domain.board.dto.response.BoardResponse;
 import com.sparta.trello.domain.board.entity.Board;
 import com.sparta.trello.domain.board.entity.BoardStatus;
+import com.sparta.trello.domain.board.mapper.BoardMapper;
 import com.sparta.trello.domain.board.repository.BoardRepository;
 import com.sparta.trello.domain.boardInvitaion.service.BoardInvitationService;
 import com.sparta.trello.domain.user.entity.User;
@@ -19,6 +20,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final BoardInvitationService invitationService;
     private final UserService userService;
+    private final BoardMapper mapper;
 
     // 보드 생성
     @Override
@@ -41,31 +43,58 @@ public class BoardServiceImpl implements BoardService {
         return new BoardResponse(board.getBoardId(), board.getBoardName(), board.getDescription(), board.getBoardStatus());
     }
 
-    public Board findBoardById(Long boardId) {
-        return boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 보드를 찾을 수 없습니다."));
-    }
 
-    public boolean isBoardOwner(Long boardId, User user) {
-        Board board = findBoardById(boardId);
-        return board.getUser().equals(user);
-    }
-
+    // 보드 수정
     @Transactional
-    public void deleteBoard(Long boardId) {
+    @Override
+    public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, String username) {
+        User user = getCurrentUser(username);
         Board board = findBoardById(boardId);
+
+        checkBoardManager(boardId, user);
+
+        board.update(boardRequest.getBoardName(), boardRequest.getDescription());
+        boardRepository.save(board);
+
+        return mapper.toBoardResponse(board);
+    }
+
+    //보드 삭제
+    @Transactional
+    @Override
+    public void deleteBoard(Long boardId, String username) {
+        User user = getCurrentUser(username);
+        Board board = findBoardById(boardId);
+
+        checkBoardManager(boardId, user);
+
         board.softDelete();
         boardRepository.save(board);
     }
 
-    // 보드 수정 메서드를 필요한 경우 추가
-    // @Transactional
-    // public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest) {
-    //     if (boardRequest.getBoardName() == null || boardRequest.getDescription() == null) {
-    //         throw new IllegalArgumentException("수정 할 보드 이름, 한 줄 설명을 입력해주세요.");
-    //     }
-    //     Board board = findBoardById(boardId);
-    //     board.update(boardRequest.getBoardName(), boardRequest.getDescription());
-    //     return new BoardResponse(board.getBoardId(), board.getBoardName(), board.getDescription(), board.getBoardStatus());
-    // }
+    // / 현재 로그인된 사용자 가져오기
+    private User getCurrentUser(String username) {
+        return userService.getUserByNameActive(username);
+    }
+
+    //보드 Manager인지
+    private void checkBoardManager(Long boardId, User user) {
+        if (!isBoardManager(boardId, user)) {
+            throw new IllegalArgumentException("해당 보드 작업에 권한이 없습니다.");
+        }
+    }
+
+    @Override
+    public boolean isBoardManager(Long boardId, User user) {
+        return boardRepository.isBoardManager(boardId, user);
+    }
+
+    // 보드 찾음
+    @Override
+    @Transactional(readOnly = true)
+    public Board findBoardById(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 보드를 찾을 수 없습니다."));
+    }
 }
+

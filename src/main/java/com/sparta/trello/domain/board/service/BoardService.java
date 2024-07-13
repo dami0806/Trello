@@ -18,8 +18,12 @@ import java.util.List;
 public interface BoardService {
     public BoardResponse createBoard(BoardRequest boardRequest, String username);
 
-    public boolean isBoardOwner(Long boardId, User user);
+    public boolean isBoardManager(Long boardId, User user);
 
-    public void deleteBoard(Long boardId);
+    public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest, String username);
+
+    public void deleteBoard(Long boardId, String username);
+
+    Board findBoardById(Long boardId);
 
 }

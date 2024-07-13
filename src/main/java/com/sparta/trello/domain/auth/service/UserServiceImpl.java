@@ -4,6 +4,7 @@ import com.sparta.trello.domain.auth.dto.request.LoginRequest;
 import com.sparta.trello.domain.auth.dto.request.SignupRequest;
 import com.sparta.trello.domain.auth.dto.response.LoginResponse;
 import com.sparta.trello.domain.auth.dto.response.TokenResponseDto;
+import com.sparta.trello.domain.auth.exception.UnauthorizedException;
 import com.sparta.trello.domain.auth.util.JwtUtil;
 import com.sparta.trello.domain.boardInvitaion.service.BoardInvitationService;
 import com.sparta.trello.domain.role.entity.Role;
@@ -194,5 +195,15 @@ public class UserServiceImpl implements UserService {
         return userRepository.getUsersInvitedToBoard(boardId).stream()
                 .map(UserResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public User getUserByNameActive(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() ->
+                new UnauthorizedException("유저를 찾을수 없습니다."));
+        if (user.getUserStatus() != UserStatus.ACTIVE) {
+            throw new UnauthorizedException("활성화된 사용자가 아닙니다.");
+        }
+        return user;
     }
 }

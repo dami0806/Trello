@@ -38,5 +38,7 @@ public interface UserService {
     List<UserResponse> getUsersNotInvitedToBoard(Long boardId);
 
     List<UserResponse> getUsersInvitedToBoard(Long boardId);
+
+    User getUserByNameActive(String username);
 }
 

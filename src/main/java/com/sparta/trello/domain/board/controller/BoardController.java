@@ -26,18 +26,22 @@ public class BoardController {
         BoardResponse response = boardService.createBoard(boardRequest, username);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+    //수정
+    @PatchMapping("/{boardId}")
+    public ResponseEntity<BoardResponse> updateBoard(@PathVariable Long boardId, @RequestBody BoardRequest boardRequest,
+                                                     @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        BoardResponse boardResponse = boardService.updateBoard(boardId, boardRequest, username);
+        return ResponseEntity.status(HttpStatus.OK).body(boardResponse);
+    }
 
-//        @PutMapping("/{boardId}")
-//        public ResponseEntity<BoardResponse> updateBoard(@PathVariable Long boardId,
-//                                                         @RequestBody BoardRequest boardRequest) {
-//            BoardResponse response = boardService.updateBoard(boardId, boardRequest);
-//            return ResponseEntity.status(HttpStatus.OK).body(response);
-//        }
 
-//        @DeleteMapping("/{boardId}")
-//        public ResponseEntity<String> deleteBoard(@PathVariable Long boardId) {
-//            boardService.deleteBoard(boardId);
-//            return new ResponseEntity<>("보드가 삭제되었습니다.", HttpStatus.OK);
-//        }
+    //삭제
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<String> deleteBoard(@PathVariable Long boardId,
+                                              @AuthenticationPrincipal UserDetails userDetails) {
+        boardService.deleteBoard(boardId, userDetails.getUsername());
+        return new ResponseEntity<>("삭제성공", HttpStatus.OK);
+    }
 
 }

@@ -104,10 +104,13 @@ public class CardServiceImpl implements CardService {
     @Override
     public CardDetailResponse getCardDetailById(Long cardId, Pageable pageable) {
         Card card = findCard(cardId);
+
         Page<Comment> comments = cardRepository.findCommentsByCardId(cardId, pageable);
         List<CommentResponse> commentResponses = commentMapper.toCommentResponseList(comments.getContent());
+
         CardDetailResponse cardResponse = cardMapper.toCardDetailResponse(card);
         cardResponse.updateComments(commentResponses);
+
         return cardResponse;
     }
 

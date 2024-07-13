@@ -2,6 +2,7 @@ package com.sparta.trello.domain.card.controller;
 
 import com.sparta.trello.domain.auth.exception.UnauthorizedException;
 import com.sparta.trello.domain.board.service.BoardService;
+import com.sparta.trello.domain.card.dto.CardDetailResponse;
 import com.sparta.trello.domain.card.dto.CardRequest;
 import com.sparta.trello.domain.card.dto.CardResponse;
 import com.sparta.trello.domain.card.service.CardService;
@@ -75,13 +76,13 @@ public class CardController {
     // 카드 상세 보기
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{cardId}")
-    public ResponseEntity<CardResponse> getCardById(@PathVariable Long boardId,
+    public ResponseEntity<CardDetailResponse> getCardById(@PathVariable Long boardId,
                                                     @PathVariable Long columnId,
                                                     @PathVariable Long cardId,
                                                     Pageable pageable,
                                                     @AuthenticationPrincipal UserDetails userDetails) {
         checkAuthAndRole(boardId,userDetails);
-        CardResponse cardResponse = cardService.getCardById(cardId, pageable);
+        CardDetailResponse cardResponse = cardService.getCardDetailById(cardId, pageable);
         return new ResponseEntity<>(cardResponse, HttpStatus.OK);
     }
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.sparta.trello.domain.board.entity.Board;
 import com.sparta.trello.domain.card.entity.Card;
+import com.sparta.trello.domain.card.exception.DatabaseAccessException;
 import com.sparta.trello.domain.common.entity.BaseEntity;
 
 import com.sparta.trello.domain.common.util.OrderConverter;
@@ -34,7 +35,7 @@ public class TrelloColumn extends BaseEntity {
 	private Board board;
 
 	// card와 매핑
-	@OneToMany(mappedBy = "trelloColumn", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "trelloColumn")
 	private List<Card> cards;
 
 
@@ -49,6 +50,10 @@ public class TrelloColumn extends BaseEntity {
 	private TrelloColumnStatus status = TrelloColumnStatus.ACTIVE;
 
 	public void addCard(Long cardId) {
+		// 최대 15개
+		if(cards.size() >= 15) {
+			throw new DatabaseAccessException("한 컬럼에 카드는 15개까지 가능합니다.");
+		}
 		cardOrder.add(cardId);
 	}
 

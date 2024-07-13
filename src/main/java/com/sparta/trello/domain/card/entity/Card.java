@@ -28,7 +28,7 @@ public class Card extends BaseEntity {
     @Column(nullable = false)
     private String description;
 
-    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "card")
     private List<Comment> comments = new ArrayList<>();
 
     @ManyToOne

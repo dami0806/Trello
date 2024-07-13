@@ -39,9 +39,11 @@ public class CardServiceImpl implements CardService {
     //card 생성
     @Transactional
     @Override
-    public CardResponse createCard(Long columnId,CardRequest cardRequest, String username) {
+    public CardResponse createCard(Long columnId, CardRequest cardRequest, String username) {
         User user = userService.getUserByName(username);
         TrelloColumn column = findTrelloColumn(columnId);
+
+        maxCardCount(columnId);
 
         Card card = Card.builder()
                 .manager(user)
@@ -66,7 +68,9 @@ public class CardServiceImpl implements CardService {
     @Override
     public CardResponse updateCard(Long columnId, Long cardId, CardRequest cardRequest, String username) {
         Card card = findCard(cardId);
+
         validateCardOwner(card, username);
+
         card.update(cardRequest.getTitle(), cardRequest.getDescription());
         saveCard(card);
         return cardMapper.toCardResponse(card);
@@ -82,8 +86,12 @@ public class CardServiceImpl implements CardService {
         TrelloColumn currentColumn = card.getTrelloColumn();
         TrelloColumn newColumn = trelloColumnService.findById(newColumnId);
 
+        maxCardCount(newColumn.getId());
+        validatePosition(newColumnId, newPosition);
+
         // 기존 컬럼에서 카드 제거
         List<Long> currentCardOrder = currentColumn.getCardOrder();
+
         currentCardOrder.remove(card.getId());
         currentColumn.updateCardOrder(currentCardOrder);
 
@@ -171,7 +179,20 @@ public class CardServiceImpl implements CardService {
         User currentUser = userService.getUserByName(username);
         if (!card.getManager().equals(currentUser)) {
             throw new SecurityException("카드의 작성자만 가능한 기능입니다.");
-       }
+        }
+    }
+
+    private void maxCardCount(Long columnId) {
+        TrelloColumn trelloColumn = trelloColumnService.findById(columnId);
+        if (trelloColumn.getCards().size() >= 15) {
+            throw new IllegalArgumentException("한 컬럼에 카드는 15가 최대입니다.");
+        }
+    }
+    // 범위를 벗어났을때 에러처리
+    private void validatePosition(Long trelloColumnId, int newPosition) {
+        TrelloColumn trelloColumn = findTrelloColumn(trelloColumnId);
+        if (newPosition < 0||newPosition >= trelloColumn.getCards().size()){
+            throw new IllegalArgumentException("카드의 위치가 범위를 벗어났습니다."+trelloColumn.getCards().size()+"이내로 다시 입력해주세요");
+        }
     }
 }
-

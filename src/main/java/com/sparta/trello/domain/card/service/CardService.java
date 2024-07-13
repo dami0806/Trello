@@ -1,5 +1,6 @@
 package com.sparta.trello.domain.card.service;
 
+import com.sparta.trello.domain.card.dto.CardDetailResponse;
 import com.sparta.trello.domain.card.dto.CardRequest;
 import com.sparta.trello.domain.card.dto.CardResponse;
 import com.sparta.trello.domain.card.entity.Card;
@@ -16,4 +17,5 @@ public interface CardService {
 
     Card findCard(Long cardId);
     CardResponse getCardById(Long cardId, Pageable pageable);
+    CardDetailResponse getCardDetailById(Long cardId, Pageable pageable);
 }

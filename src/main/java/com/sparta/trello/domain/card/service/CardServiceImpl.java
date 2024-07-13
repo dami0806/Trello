@@ -1,5 +1,7 @@
 package com.sparta.trello.domain.card.service;
 
+import com.sparta.trello.domain.auth.service.UserService;
+import com.sparta.trello.domain.card.dto.CardDetailResponse;
 import com.sparta.trello.domain.card.dto.CardRequest;
 import com.sparta.trello.domain.card.dto.CardResponse;
 import com.sparta.trello.domain.card.entity.Card;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,15 +29,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
+
     private final TrelloColumnService trelloColumnService;
+    private final UserService userService;
+
     private final CardMapper cardMapper;
     private final CommentMapper commentMapper;
 
     //card 생성
+    @Transactional
     @Override
     public CardResponse createCard(Long columnId,CardRequest cardRequest, String username) {
-
+        User user = userService.getUserByName(username);
         Card card = Card.builder()
+                .manager(user)
                 .title(cardRequest.getTitle())
                 .description(cardRequest.getDescription())
                 .trelloColumn(findTrelloColumn(columnId))
@@ -45,6 +53,7 @@ public class CardServiceImpl implements CardService {
     }
 
     //card 수정
+    @Transactional
     @Override
     public CardResponse updateCard(Long columnId, Long cardId, CardRequest cardRequest) {
         Card card = findCard(cardId);
@@ -55,6 +64,7 @@ public class CardServiceImpl implements CardService {
     }
 
     // card 위치 수정
+    @Transactional
     @Override
     public void updateCardPosition(Long cardId, int newPosition, Long newColumnId) {
 
@@ -69,6 +79,7 @@ public class CardServiceImpl implements CardService {
     }
 
     // card 삭제
+    @Transactional
     @Override
     public void deleteCard(Long cardId) {
         Card card = findCard(cardId);
@@ -77,14 +88,25 @@ public class CardServiceImpl implements CardService {
         saveCard(card);
     }
 
-
-    // card 상세 보기 - 댓글까지 모두
+    // card 보기 - 댓글까지 모두
+    @Transactional
     @Override
     public CardResponse getCardById(Long cardId, Pageable pageable) {
         Card card = findCard(cardId);
         Page<Comment> comments = cardRepository.findCommentsByCardId(cardId, pageable);
         List<CommentResponse> commentResponses = commentMapper.toCommentResponseList(comments.getContent());
         CardResponse cardResponse = cardMapper.toCardResponse(card);
+        return cardResponse;
+    }
+
+    // card 상세 보기 - 댓글까지 모두
+    @Transactional
+    @Override
+    public CardDetailResponse getCardDetailById(Long cardId, Pageable pageable) {
+        Card card = findCard(cardId);
+        Page<Comment> comments = cardRepository.findCommentsByCardId(cardId, pageable);
+        List<CommentResponse> commentResponses = commentMapper.toCommentResponseList(comments.getContent());
+        CardDetailResponse cardResponse = cardMapper.toCardDetailResponse(card);
         cardResponse.updateComments(commentResponses);
         return cardResponse;
     }
@@ -98,7 +120,6 @@ public class CardServiceImpl implements CardService {
             throw new DatabaseAccessException("Card 데이터 베이스 접근을 실패했습니다.");
         }
     }
-
 
     @Override
     public Card findCard(Long cardId) {

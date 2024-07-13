@@ -1,5 +1,9 @@
 package com.sparta.trello.domain.column.service;
 
+import com.sparta.trello.domain.card.dto.CardResponse;
+import com.sparta.trello.domain.card.entity.Card;
+import com.sparta.trello.domain.card.service.CardServiceImpl;
+import com.sparta.trello.domain.column.dto.response.TrelloColumnResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -119,6 +124,36 @@ public class TrelloColumnServiceImpl implements TrelloColumnService {
 	public TrelloColumn findById(Long id) {
 		return columnRepository.findById(id).orElse(null);
 	}
+
+	@Override
+	public TrelloColumnResponse getColumnDetails(Long columnId) {
+		TrelloColumn column = columnRepository.findById(columnId)
+				.orElseThrow(() -> new IllegalArgumentException("컬럼을 찾을수 없습니다"));
+
+		List<CardResponse> cardResponses = column.getCards().stream()
+				.map(card -> new CardResponse(
+						card.getId(),
+						card.getTitle(),
+						card.getDescription(),
+						card.getManager().getUsername(),
+						(int) card.getPosition(),
+						card.getTrelloColumn().getId(),
+						card.getCreateAt(),
+						card.getUpdateAt()))
+				.collect(Collectors.toList());
+
+		return TrelloColumnResponse.builder()
+				.id(column.getId())
+				.title(column.getTitle())
+				.position(column.getPosition())
+				.status(column.getStatus().name())
+				.createAt(column.getCreateAt())
+				.updateAt(column.getUpdateAt())
+				.cards(cardResponses)
+				.build();
+	}
+
+
 
 	private int getNextPosition(Board board) {
 		return columnRepository.countByBoardAndStatus(board, TrelloColumnStatus.ACTIVE);

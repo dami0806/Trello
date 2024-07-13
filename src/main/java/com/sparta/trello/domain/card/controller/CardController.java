@@ -84,6 +84,7 @@ public class CardController {
         CardResponse cardResponse = cardService.getCardById(cardId, pageable);
         return new ResponseEntity<>(cardResponse, HttpStatus.OK);
     }
+
     // 권한 검증
     private void checkBoardMemberOrManager(Long boardId, String username) {
         if (!boardService.isBoardMemberOrManager(boardId, username)) {

@@ -1,5 +1,6 @@
 package com.sparta.trello.domain.card.mapper;
 
+import com.sparta.trello.domain.card.dto.CardDetailResponse;
 import com.sparta.trello.domain.card.dto.CardRequest;
 import com.sparta.trello.domain.card.dto.CardResponse;
 import com.sparta.trello.domain.card.entity.Card;
@@ -10,6 +11,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Mapper(componentModel = "spring")
@@ -22,12 +24,21 @@ public interface CardMapper {
             @Mapping(source = "updateAt", target = "updateAt"),
             @Mapping(target = "comments", expression = "java(mapComments(card.getComments()))")
     })
+    CardDetailResponse toCardDetailResponse(Card card);
+
+
+    @Mappings({
+            @Mapping(source = "trelloColumn.id", target = "trelloColumnId"),
+            @Mapping(source = "manager.id", target = "manager"),
+            @Mapping(source = "createAt", target = "createAt"),
+            @Mapping(source = "updateAt", target = "updateAt"),
+    })
     CardResponse toCardResponse(Card card);
 
-    List<CardResponse> toCardResponseList(List<Card> cards);
-
     default List<CommentResponse> mapComments(List<Comment> comments) {
-
+        if (comments == null) {
+            comments = List.of(); // null일 경우 빈 리스트로 초기화
+        }
         return comments.stream()
                 .map(comment -> new CommentResponse(
                         comment.getId(),
@@ -35,6 +46,6 @@ public interface CardMapper {
                         comment.getUser().getUsername(),
                         comment.getCreateAt(),
                         comment.getUpdateAt()))
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 }

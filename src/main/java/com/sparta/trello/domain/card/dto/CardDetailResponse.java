@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter //Lombok
 @AllArgsConstructor
-public class CardResponse {
+public class CardDetailResponse {
     private Long id;
     private String title;
     private String description;
@@ -17,8 +17,13 @@ public class CardResponse {
     private int position;
 
     private Long trelloColumnId;
+    private List<CommentResponse> comments;
 
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
 
+    public void updateComments(List<CommentResponse> commentResponses) {
+        this.comments = commentResponses;
+    }
 }
+

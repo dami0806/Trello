@@ -6,6 +6,7 @@ import com.sparta.trello.domain.board.dto.response.BoardResponse;
 import com.sparta.trello.domain.board.entity.Board;
 import com.sparta.trello.domain.board.entity.BoardStatus;
 import com.sparta.trello.domain.board.repository.BoardRepository;
+import com.sparta.trello.domain.boardInvitaion.dto.BoardInvitationRequest;
 import com.sparta.trello.domain.common.util.SecurityUtils;
 import com.sparta.trello.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,8 @@ public interface BoardService {
     public void deleteBoard(Long boardId, String username);
 
     Board findBoardById(Long boardId);
+
+    void inviteUserToBoard(Long boardId, BoardInvitationRequest invitationRequest, String username);
+
 
 }

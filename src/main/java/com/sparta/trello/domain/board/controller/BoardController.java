@@ -4,6 +4,7 @@ import com.sparta.trello.domain.auth.service.UserService;
 import com.sparta.trello.domain.board.dto.request.BoardRequest;
 import com.sparta.trello.domain.board.dto.response.BoardResponse;
 import com.sparta.trello.domain.board.service.BoardService;
+import com.sparta.trello.domain.boardInvitaion.dto.BoardInvitationRequest;
 import com.sparta.trello.domain.common.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,5 +44,15 @@ public class BoardController {
         boardService.deleteBoard(boardId, userDetails.getUsername());
         return new ResponseEntity<>("삭제성공", HttpStatus.OK);
     }
+
+    //초대
+    @PostMapping("/invite/{boardId}")
+    public ResponseEntity<String> inviteUserToBoard(@PathVariable Long boardId,
+                                                    @RequestBody BoardInvitationRequest invitationRequest,
+                                                    @AuthenticationPrincipal UserDetails userDetails) {
+        boardService.inviteUserToBoard(boardId, invitationRequest, userDetails.getUsername());
+        return new ResponseEntity<>("초대 성공", HttpStatus.OK);
+    }
+
 
 }

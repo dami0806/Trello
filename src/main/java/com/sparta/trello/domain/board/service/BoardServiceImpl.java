@@ -7,7 +7,9 @@ import com.sparta.trello.domain.board.entity.Board;
 import com.sparta.trello.domain.board.entity.BoardStatus;
 import com.sparta.trello.domain.board.mapper.BoardMapper;
 import com.sparta.trello.domain.board.repository.BoardRepository;
+import com.sparta.trello.domain.boardInvitaion.dto.BoardInvitationRequest;
 import com.sparta.trello.domain.boardInvitaion.service.BoardInvitationService;
+import com.sparta.trello.domain.role.entity.Role;
 import com.sparta.trello.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -95,6 +97,19 @@ public class BoardServiceImpl implements BoardService {
     public Board findBoardById(Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 보드를 찾을 수 없습니다."));
+    }
+
+    @Override
+    @Transactional
+    public void inviteUserToBoard(Long boardId,BoardInvitationRequest invitationRequest, String username) {
+        User currentUser = getCurrentUser(username);
+        Board board = findBoardById(boardId);
+
+        checkBoardManager(boardId, currentUser);
+
+        User userToInvite = userService.getUserByEmail(invitationRequest.getEmail());
+
+        invitationService.inviteUserToBoard(userToInvite, board, invitationRequest.getRole()); // Manager, Member둘다 가능
     }
 }
 

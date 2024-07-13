@@ -14,6 +14,7 @@ import com.sparta.trello.domain.comment.mapper.CommentMapper;
 import com.sparta.trello.domain.common.util.SecurityUtils;
 import com.sparta.trello.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,15 +32,13 @@ public class CardServiceImpl implements CardService {
 
     //card 생성
     @Override
-    public CardResponse createCard(CardRequest cardRequest, User user) {
-        TrelloColumn trelloColumn = findTrelloColumn(cardRequest.getTrelloColumnId());
+    public CardResponse createCard(Long columnId,CardRequest cardRequest, String username) {
 
         Card card = Card.builder()
                 .title(cardRequest.getTitle())
                 .description(cardRequest.getDescription())
-                .trelloColumn(trelloColumn)
-                .manager(user)
-                .position(getPosition(cardRequest.getTrelloColumnId()))
+                .trelloColumn(findTrelloColumn(columnId))
+                .position(getPosition(columnId))
                 .build();
         saveCard(card);
         return cardMapper.toCardResponse(card);
@@ -47,9 +46,9 @@ public class CardServiceImpl implements CardService {
 
     //card 수정
     @Override
-    public CardResponse updateCard(Long cardId, CardRequest cardRequest, User user) {
+    public CardResponse updateCard(Long columnId, Long cardId, CardRequest cardRequest) {
         Card card = findCard(cardId);
-        validateCardOwner(card, user);
+        validateCardOwner(card);
         card.update(cardRequest.getTitle(), cardRequest.getDescription());
         saveCard(card);
         return cardMapper.toCardResponse(card);
@@ -57,10 +56,10 @@ public class CardServiceImpl implements CardService {
 
     // card 위치 수정
     @Override
-    public void updateCardPosition(Long cardId, int newPosition, Long newColumnId, User user) {
+    public void updateCardPosition(Long cardId, int newPosition, Long newColumnId) {
 
         Card card = findCard(cardId);
-        validateCardOwner(card, user);
+        validateCardOwner(card);
 
         TrelloColumn newColumn = findTrelloColumn(newColumnId);
 
@@ -71,9 +70,9 @@ public class CardServiceImpl implements CardService {
 
     // card 삭제
     @Override
-    public void deleteCard(Long cardId, User user) {
+    public void deleteCard(Long cardId) {
         Card card = findCard(cardId);
-        validateCardOwner(card, user);
+        validateCardOwner(card);
         card.softDelete();
         saveCard(card);
     }
@@ -121,11 +120,11 @@ public class CardServiceImpl implements CardService {
         return trelloColumn;
     }
 
-    private void validateCardOwner(Card card, User user) {
-        User currentUser = SecurityUtils.getCurrentUser();
-        if (!card.getManager().equals(currentUser)) {
-            throw new SecurityException("카드의 작성자만 가능한 기능입니다.");
-        }
+    private void validateCardOwner(Card card) {
+//        User currentUser = SecurityUtils.getCurrentUsername();
+//        if (!card.getManager().equals(currentUser)) {
+//            throw new SecurityException("카드의 작성자만 가능한 기능입니다.");
+//        }
     }
 }
 

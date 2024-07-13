@@ -6,5 +6,4 @@ import lombok.Getter;
 public class CardRequest {
     private String title;
     private String description;
-    private Long trelloColumnId;
 }

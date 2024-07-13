@@ -9,8 +9,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface CommentMapper {
-
-    @Mapping(source = "user.name", target = "username")
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "createAt", target = "createAt")
     @Mapping(source = "updateAt", target = "updateAt")
     CommentResponse toCommentResponse(Comment comment);

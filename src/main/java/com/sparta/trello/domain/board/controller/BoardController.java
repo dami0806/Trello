@@ -1,67 +1,58 @@
 package com.sparta.trello.domain.board.controller;
 
+import com.sparta.trello.domain.auth.service.UserService;
+import com.sparta.trello.domain.board.dto.request.BoardRequest;
+import com.sparta.trello.domain.board.dto.response.BoardResponse;
+import com.sparta.trello.domain.board.service.BoardService;
+import com.sparta.trello.domain.boardInvitaion.dto.BoardInvitationRequest;
+import com.sparta.trello.domain.common.util.SecurityUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import com.sparta.trello.domain.auth.exception.UnauthorizedException;
-import com.sparta.trello.domain.board.dto.request.BoardRequest;
-import com.sparta.trello.domain.board.dto.response.BoardResponse;
-import com.sparta.trello.domain.board.service.BoardService;
-import com.sparta.trello.domain.user.entity.User;
-import com.sparta.trello.domain.user.repository.UserRepository;
-
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-
 @RestController
-@RequestMapping("/boards")
 @RequiredArgsConstructor
+@RequestMapping("/api/auth/boards")
 public class BoardController {
 
-    private final BoardService boardService;
-    private final UserRepository userRepository;
-
-    private User validateUserDetails(UserDetails userDetails) {
-        if (userDetails == null) {
-            throw new UnauthorizedException("인증이 필요합니다.");
-        }
-
-        return userRepository.findByName(userDetails.getUsername())
-            .orElseThrow(() -> new UnauthorizedException("사용자를 찾을 수 없습니다."));
-    }
+        private final BoardService boardService;
 
     @PostMapping
     public ResponseEntity<BoardResponse> createBoard(@RequestBody BoardRequest boardRequest,
-        @AuthenticationPrincipal UserDetails userDetails) {
-        User user = validateUserDetails(userDetails);
-        BoardResponse response = boardService.createBoard(boardRequest, user);
-        return ResponseEntity.ok(response);
+                                                     @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        BoardResponse response = boardService.createBoard(boardRequest, username);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    //수정
+    @PatchMapping("/{boardId}")
+    public ResponseEntity<BoardResponse> updateBoard(@PathVariable Long boardId, @RequestBody BoardRequest boardRequest,
+                                                     @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        BoardResponse boardResponse = boardService.updateBoard(boardId, boardRequest, username);
+        return ResponseEntity.status(HttpStatus.OK).body(boardResponse);
     }
 
-    @PutMapping("/{boardId}")
-    public ResponseEntity<BoardResponse> updateBoard(@PathVariable Long boardId,
-        @RequestBody BoardRequest boardRequest,
-        @AuthenticationPrincipal UserDetails userDetails) {
-        validateUserDetails(userDetails);
-        BoardResponse response = boardService.updateBoard(boardId, boardRequest);
-        return ResponseEntity.ok(response);
-    }
 
+    //삭제
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId,
-        @AuthenticationPrincipal UserDetails userDetails) {
-        validateUserDetails(userDetails);
-        boardService.deleteBoard(boardId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteBoard(@PathVariable Long boardId,
+                                              @AuthenticationPrincipal UserDetails userDetails) {
+        boardService.deleteBoard(boardId, userDetails.getUsername());
+        return new ResponseEntity<>("삭제성공", HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<List<BoardResponse>> getBoards(@AuthenticationPrincipal UserDetails userDetails) {
-        User user = validateUserDetails(userDetails);
-        List<BoardResponse> response = boardService.getBoards(user);
-        return ResponseEntity.ok(response);
+    //초대
+    @PostMapping("/invite/{boardId}")
+    public ResponseEntity<String> inviteUserToBoard(@PathVariable Long boardId,
+                                                    @RequestBody BoardInvitationRequest invitationRequest,
+                                                    @AuthenticationPrincipal UserDetails userDetails) {
+        boardService.inviteUserToBoard(boardId, invitationRequest, userDetails.getUsername());
+        return new ResponseEntity<>("초대 성공", HttpStatus.OK);
     }
+
+
 }

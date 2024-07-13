@@ -1,12 +1,25 @@
 package com.sparta.trello.domain.common.util;
 
+import com.sparta.trello.domain.auth.exception.UnauthorizedException;
 import com.sparta.trello.domain.user.entity.User;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class SecurityUtils {
 
     // 현재 인증된 사용자 정보를 반환
-    public static User getCurrentUser() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public static String getCurrentUsername() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            return ((UserDetails) principal).getUsername();
+        } else {
+            return principal.toString();
+        }
+    }
+
+    public static void validdateUserDetails(UserDetails userDetails) {
+        if (userDetails == null) {
+            throw new UnauthorizedException("인증이 필요합니다.");
+        }
     }
 }

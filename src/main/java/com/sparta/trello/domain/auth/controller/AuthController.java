@@ -1,53 +1,93 @@
 package com.sparta.trello.domain.auth.controller;
 
-import com.sparta.trello.domain.auth.dto.request.LoginRequestDto;
-import com.sparta.trello.domain.auth.dto.request.SignupRequestDto;
-import com.sparta.trello.domain.auth.dto.response.LoginResponseDto;
-import com.sparta.trello.domain.auth.service.AuthService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.sparta.trello.domain.auth.dto.request.LoginRequest;
+import com.sparta.trello.domain.auth.dto.request.RefreshTokenRequest;
+import com.sparta.trello.domain.auth.dto.request.SignupRequest;
+import com.sparta.trello.domain.auth.dto.response.LoginResponse;
+import com.sparta.trello.domain.auth.dto.response.TokenResponseDto;
+import com.sparta.trello.domain.auth.service.UserService;
+import com.sparta.trello.domain.auth.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-    private final AuthService authService;
-
+    /**
+     * 회원가입
+     *
+     * @param signupRequest
+     * @return
+     */
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody SignupRequestDto signupRequest) {
-        authService.signup(signupRequest);
-        return ResponseEntity.ok("회원가입 성공");
+    public ResponseEntity<String> signup(@RequestBody SignupRequest signupRequest) {
+        userService.signup(signupRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
     }
 
+    /**
+     * 로그인
+     *
+     * @param loginRequest
+     * @return 헤더에 반환
+     */
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest) {
-        LoginResponseDto response = authService.login(loginRequest);
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        LoginResponse tokens = userService.login(loginRequest); // 로그인 시도 및 토큰 생성
+        String accessToken = tokens.getAccessToken();
+        String refreshToken = tokens.getRefreshToken();
 
+        // 각 토큰을 별도의 헤더에 설정
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + response.getAccessToken());
-        headers.add("Refresh-Token", "Bearer " + response.getRefreshToken());
+        headers.set("Authorization", accessToken);
+        headers.set("Refresh-Token", refreshToken);
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(response);
+        return new ResponseEntity<>("로그인 성공", headers, HttpStatus.OK);
     }
 
-    @PatchMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
-        // Authorization 헤더에서 액세스 토큰 추출
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String accessToken = authHeader.substring(7); // "Bearer "를 제거
-
-            // 서비스 호출
-            authService.logout(accessToken);
-            return ResponseEntity.ok("로그아웃 성공했습니다.");
-        }
-        return ResponseEntity.badRequest().body("유효하지 않은 토큰입니다.");
+    /**
+     * 로그아웃
+     *
+     * @param userId
+     * @param accessToken
+     * @return
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestParam String userId, String accessToken) {
+        userService.logout(userId, accessToken);
+        return ResponseEntity.status(HttpStatus.OK).body("로그아웃 되었습니다");
     }
 
+    /**
+     * 회원탈퇴
+     *
+     * @param userId
+     * @param accessToken
+     * @param refreshToken
+     * @return
+     */
+    @PatchMapping("/withdraw")
+    public ResponseEntity<String> withdraw(@RequestParam String userId, String password, String accessToken, String refreshToken) {
+        userService.withdraw(userId, password, accessToken, refreshToken);
+        return ResponseEntity.status(HttpStatus.OK).body("회원탈퇴가 완료되었습니다.");
+    }
+
+    /**
+     * 리프레시 토큰 재발급
+     *
+     * @param refreshTokenRequest
+     * @return
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenResponseDto> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        TokenResponseDto tokenResponseDto = userService.refresh(refreshTokenRequest.getRefreshToken());
+        return ResponseEntity.ok(tokenResponseDto);
+    }
 }

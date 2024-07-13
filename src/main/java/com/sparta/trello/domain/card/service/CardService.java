@@ -9,12 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 public interface CardService {
-    CardResponse createCard(CardRequest cardRequest, User user);
-    CardResponse updateCard(Long cardId, CardRequest cardRequest, User user);
-    void updateCardPosition(Long cardId, int newPosition, Long newColumnId, User user);
-    void deleteCard(Long cardId, User user);
-//    // 카드 상세보기
-//    CardResponse getCardById(Long cardId);
+    CardResponse createCard(Long columnId,CardRequest cardRequest, String username);
+    CardResponse updateCard(Long columnId,Long cardId, CardRequest cardRequest);
+    void updateCardPosition(Long cardId, int newPosition, Long newColumnId);
+    void deleteCard(Long cardId);
+
     Card findCard(Long cardId);
     CardResponse getCardById(Long cardId, Pageable pageable);
 }

@@ -1,19 +1,20 @@
 package com.sparta.trello.domain.board.entity;
 
 import com.sparta.trello.domain.column.entity.TrelloColumn;
+import com.sparta.trello.domain.common.entity.BaseEntity;
 import com.sparta.trello.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "board")
-public class Board {
+@Builder
+@AllArgsConstructor
+public class Board extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,16 +29,12 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private BoardStatus boardStatus;
 
-    // Column Entity 생성 후 주석 해제
     @OneToMany(mappedBy = "board")
     private List<TrelloColumn> columnList = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @OneToMany(mappedBy = "boardInvitationId")
-    private List<BoardInvitation> boardInvitationList = new ArrayList<>();
 
     public Board(String boardName, String description, BoardStatus boardStatus, User user) {
         this.boardName = boardName;

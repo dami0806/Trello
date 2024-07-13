@@ -46,9 +46,12 @@ public class Card extends BaseEntity {
     @Column(nullable = false)
     private CardStatus status = CardStatus.ACTIVE;
 
+    // 카드 위치 변경
     public void updatePosition(int position) {
         this.position = position;
     }
+
+    // 카드 컬럼 변경
     public void updateColumn(TrelloColumn trelloColumn) {
         this.trelloColumn = trelloColumn;
     }

@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 public interface CardService {
     CardResponse createCard(Long columnId,CardRequest cardRequest, String username);
-    CardResponse updateCard(Long columnId,Long cardId, CardRequest cardRequest);
+    CardResponse updateCard(Long columnId,Long cardId, CardRequest cardRequest, String username);
     void updateCardPosition(Long cardId, int newPosition, Long newColumnId);
-    void deleteCard(Long cardId);
+    void deleteCard(Long cardId, String username);
 
     Card findCard(Long cardId);
     CardResponse getCardById(Long cardId, Pageable pageable);

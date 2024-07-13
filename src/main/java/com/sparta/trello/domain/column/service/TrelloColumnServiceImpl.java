@@ -2,6 +2,7 @@ package com.sparta.trello.domain.column.service;
 
 import com.sparta.trello.domain.card.dto.CardResponse;
 import com.sparta.trello.domain.card.entity.Card;
+import com.sparta.trello.domain.card.mapper.CardMapper;
 import com.sparta.trello.domain.card.service.CardServiceImpl;
 import com.sparta.trello.domain.column.dto.response.TrelloColumnResponse;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 public class TrelloColumnServiceImpl implements TrelloColumnService {
 	private final TrelloColumnRepository columnRepository;
 	private final BoardRepository boardRepository;
+	private final CardMapper cardMapper;
 
 	@Transactional
 	@Override
@@ -129,6 +131,7 @@ public class TrelloColumnServiceImpl implements TrelloColumnService {
 	public TrelloColumnResponse getColumnDetails(Long columnId) {
 		TrelloColumn column = columnRepository.findById(columnId)
 				.orElseThrow(() -> new IllegalArgumentException("컬럼을 찾을수 없습니다"));
+
 
 		List<CardResponse> cardResponses = column.getCards().stream()
 				.map(card -> new CardResponse(

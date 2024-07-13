@@ -41,6 +41,8 @@ public class CardServiceImpl implements CardService {
     @Override
     public CardResponse createCard(Long columnId,CardRequest cardRequest, String username) {
         User user = userService.getUserByName(username);
+        TrelloColumn column = findTrelloColumn(columnId);
+
         Card card = Card.builder()
                 .manager(user)
                 .title(cardRequest.getTitle())
@@ -48,16 +50,23 @@ public class CardServiceImpl implements CardService {
                 .trelloColumn(findTrelloColumn(columnId))
                 .position(getPosition(columnId))
                 .build();
+
         saveCard(card);
+
+        // 컬럼의 카드 순서 업데이트
+        List<Long> cardOrder = column.getCardOrder();
+        cardOrder.add(card.getId());
+        column.updateCardOrder(cardOrder);
+
         return cardMapper.toCardResponse(card);
     }
 
     //card 수정
     @Transactional
     @Override
-    public CardResponse updateCard(Long columnId, Long cardId, CardRequest cardRequest) {
+    public CardResponse updateCard(Long columnId, Long cardId, CardRequest cardRequest, String username) {
         Card card = findCard(cardId);
-        validateCardOwner(card);
+        validateCardOwner(card, username);
         card.update(cardRequest.getTitle(), cardRequest.getDescription());
         saveCard(card);
         return cardMapper.toCardResponse(card);
@@ -69,11 +78,25 @@ public class CardServiceImpl implements CardService {
     public void updateCardPosition(Long cardId, int newPosition, Long newColumnId) {
 
         Card card = findCard(cardId);
-        validateCardOwner(card);
 
-        TrelloColumn newColumn = findTrelloColumn(newColumnId);
+        TrelloColumn currentColumn = card.getTrelloColumn();
+        TrelloColumn newColumn = trelloColumnService.findById(newColumnId);
 
-        card.updatePosition(newPosition);
+        // 기존 컬럼에서 카드 제거
+        List<Long> currentCardOrder = currentColumn.getCardOrder();
+        currentCardOrder.remove(card.getId());
+        currentColumn.updateCardOrder(currentCardOrder);
+
+        // 새 컬럼의 카드 순서 업데이트
+        List<Long> newCardOrder = newColumn.getCardOrder();
+        if (newPosition >= newCardOrder.size()) {
+            newCardOrder.add(card.getId()); // 리스트 끝에 추가
+        } else {
+            newCardOrder.add(newPosition, card.getId()); // 지정된 위치에 추가
+        }
+        newColumn.updateCardOrder(newCardOrder);
+
+        // 카드의 컬럼 변경
         card.updateColumn(newColumn);
         saveCard(card);
     }
@@ -81,9 +104,9 @@ public class CardServiceImpl implements CardService {
     // card 삭제
     @Transactional
     @Override
-    public void deleteCard(Long cardId) {
+    public void deleteCard(Long cardId, String username) {
         Card card = findCard(cardId);
-        validateCardOwner(card);
+        validateCardOwner(card, username);
         card.softDelete();
         saveCard(card);
     }
@@ -144,11 +167,11 @@ public class CardServiceImpl implements CardService {
         return trelloColumn;
     }
 
-    private void validateCardOwner(Card card) {
-//        User currentUser = SecurityUtils.getCurrentUsername();
-//        if (!card.getManager().equals(currentUser)) {
-//            throw new SecurityException("카드의 작성자만 가능한 기능입니다.");
-//        }
+    private void validateCardOwner(Card card, String username) {
+        User currentUser = userService.getUserByName(username);
+        if (!card.getManager().equals(currentUser)) {
+            throw new SecurityException("카드의 작성자만 가능한 기능입니다.");
+       }
     }
 }
 

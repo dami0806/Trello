@@ -45,7 +45,7 @@ public class CardController {
                                                    @AuthenticationPrincipal UserDetails userDetails) {
         checkAuthAndRole(boardId,userDetails);
 
-        CardResponse cardResponse = cardService.updateCard(columnId,cardId, cardRequest);
+        CardResponse cardResponse = cardService.updateCard(columnId,cardId, cardRequest, userDetails.getUsername());
         return new ResponseEntity<>(cardResponse, HttpStatus.OK);
     }
 
@@ -57,7 +57,7 @@ public class CardController {
                                              @AuthenticationPrincipal UserDetails userDetails) {
 
         checkAuthAndRole(boardId,userDetails);
-        cardService.deleteCard(cardId);
+        cardService.deleteCard(cardId,userDetails.getUsername());
         return new ResponseEntity<>("카드 삭제하기 성공", HttpStatus.OK);
     }
 

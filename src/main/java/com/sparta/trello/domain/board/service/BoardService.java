@@ -1,6 +1,5 @@
 package com.sparta.trello.domain.board.service;
 
-import com.sparta.trello.domain.auth.service.UserDetailsServiceImpl;
 import com.sparta.trello.domain.board.dto.request.BoardRequest;
 import com.sparta.trello.domain.board.dto.response.BoardResponse;
 import com.sparta.trello.domain.board.entity.Board;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +21,6 @@ public class BoardService {
 
     // 보드 생성
     public BoardResponse createBoard(BoardRequest boardRequest, User user) {
-
         if (boardRequest.getBoardName() == null || boardRequest.getDescription() == null) {
             throw new IllegalArgumentException("보드 이름, 한 줄 설명을 입력해주세요.");
         }
@@ -38,7 +37,6 @@ public class BoardService {
     @Transactional
     // 보드 수정
     public BoardResponse updateBoard(Long boardId, BoardRequest boardRequest) {
-
         if (boardRequest.getBoardName() == null || boardRequest.getDescription() == null) {
             throw new IllegalArgumentException("수정 할 보드 이름, 한 줄 설명을 입력해주세요.");
         }
@@ -52,16 +50,23 @@ public class BoardService {
     @Transactional
     // 보드 삭제
     public void deleteBoard(Long boardId) {
-
         Board board = findBoardById(boardId);
         board.softDelete();
         boardRepository.save(board);
     }
 
-    private Board findBoardById(Long BoardId) {
+    @Transactional(readOnly = true)
+    // 사용자와 관련된 모든 보드 가져오기
+    public List<BoardResponse> getBoards(User user) {
+        List<Board> boards = boardRepository.findByUserAndBoardStatus(user, BoardStatus.ACTIVE);
+        return boards.stream()
+            .map(board -> new BoardResponse(board.getBoardName(), board.getDescription()))
+            .collect(Collectors.toList());
+    }
 
-        return boardRepository.findById(BoardId).orElseThrow(
-                () -> new IllegalArgumentException("해당 보드를 찾을 수 없습니다.")
+    private Board findBoardById(Long boardId) {
+        return boardRepository.findById(boardId).orElseThrow(
+            () -> new IllegalArgumentException("해당 보드를 찾을 수 없습니다.")
         );
     }
 }

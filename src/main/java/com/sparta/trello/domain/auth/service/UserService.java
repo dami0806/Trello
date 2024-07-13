@@ -4,9 +4,12 @@ import com.sparta.trello.domain.auth.dto.request.LoginRequest;
 import com.sparta.trello.domain.auth.dto.request.SignupRequest;
 import com.sparta.trello.domain.auth.dto.response.LoginResponse;
 import com.sparta.trello.domain.auth.dto.response.TokenResponseDto;
+import com.sparta.trello.domain.user.dto.UserResponse;
 import com.sparta.trello.domain.user.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import java.util.List;
 
 public interface UserService {
     // 회원가입
@@ -28,5 +31,12 @@ public interface UserService {
 
 
     User getUserByName(String username);
-    }
+
+
+    List<UserResponse> getAllUsers();
+
+    List<UserResponse> getUsersNotInvitedToBoard(Long boardId);
+
+    List<UserResponse> getUsersInvitedToBoard(Long boardId);
+}
 

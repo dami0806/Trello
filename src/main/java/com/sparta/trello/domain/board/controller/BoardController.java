@@ -4,6 +4,7 @@ import com.sparta.trello.domain.auth.service.UserService;
 import com.sparta.trello.domain.board.dto.request.BoardRequest;
 import com.sparta.trello.domain.board.dto.response.BoardResponse;
 import com.sparta.trello.domain.board.service.BoardService;
+import com.sparta.trello.domain.common.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,30 +17,27 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth/boards")
 public class BoardController {
 
-    private final BoardService boardService;
-    private final UserService userService;
+        private final BoardService boardService;
 
     @PostMapping
     public ResponseEntity<BoardResponse> createBoard(@RequestBody BoardRequest boardRequest,
-                                                     @AuthenticationPrincipal UserDetails userDetails){
-
-
-        BoardResponse response = boardService.createBoard(boardRequest, userDetails.getUsername());
+                                                     @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        BoardResponse response = boardService.createBoard(boardRequest, username);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-//    @PutMapping("/boards/{boardId}")
-//    public ResponseEntity<BoardResponse> updateBoard(@PathVariable Long boardId,
-//                                                     @RequestBody BoardRequest boardRequest) {
-//
-//        BoardResponse response = boardService.updateBoard(boardId, boardRequest);
-//        return ResponseEntity.status(HttpStatus.OK).body(response);
-//    }
-//
-//    @DeleteMapping("/boards/{boardId}")
-//    public ResponseEntity<String> deleteComment(@PathVariable Long boardId) {
-//        boardService.deleteBoard(boardId);
-//        return new ResponseEntity<>("보드가 삭제 되었습니다.", HttpStatus.OK);
-//    }
+//        @PutMapping("/{boardId}")
+//        public ResponseEntity<BoardResponse> updateBoard(@PathVariable Long boardId,
+//                                                         @RequestBody BoardRequest boardRequest) {
+//            BoardResponse response = boardService.updateBoard(boardId, boardRequest);
+//            return ResponseEntity.status(HttpStatus.OK).body(response);
+//        }
+
+//        @DeleteMapping("/{boardId}")
+//        public ResponseEntity<String> deleteBoard(@PathVariable Long boardId) {
+//            boardService.deleteBoard(boardId);
+//            return new ResponseEntity<>("보드가 삭제되었습니다.", HttpStatus.OK);
+//        }
 
 }

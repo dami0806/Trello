@@ -1,5 +1,6 @@
 package com.sparta.trello.domain.auth.service;
 
+import com.sparta.trello.domain.user.dto.UserResponse;
 import com.sparta.trello.domain.user.entity.User;
 import com.sparta.trello.domain.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,7 +8,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -36,7 +39,26 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .roles(user.getUserRole().toString())
+                .roles(user.getRoles().toString())
                 .build();
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(UserResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserResponse> getUsersNotInvitedToBoard(Long boardId) {
+        List<User> invitedUsers = userRepository.getUsersNotInvitedToBoard(boardId);
+        List<User> allUsers = userRepository.findAll();
+        allUsers.removeAll(invitedUsers);
+        return allUsers.stream()
+                .map(UserResponse::new)
+                .collect(Collectors.toList());
     }
 }

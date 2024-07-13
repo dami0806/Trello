@@ -1,5 +1,6 @@
 package com.sparta.trello.domain.comment.service;
 
+import com.sparta.trello.domain.auth.service.UserService;
 import com.sparta.trello.domain.card.entity.Card;
 import com.sparta.trello.domain.card.service.CardService;
 import com.sparta.trello.domain.comment.dto.CommentRequest;
@@ -22,11 +23,12 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CardService cardService;
     private final CommentMapper commentMapper;
+    private final UserService userService;
 
     @Override
-    public CommentResponse createComment(Long cardId, CommentRequest commentRequest) {
+    public CommentResponse createComment(Long cardId, CommentRequest commentRequest,String username) {
         Card card = cardService.findCard(cardId);
-        User user = SecurityUtils.getCurrentUser();
+        User user = userService.getUserByName(username);
 
         Comment comment = Comment.builder()
                 .content(commentRequest.getContent())
@@ -38,18 +40,18 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponse updateComment(Long commentId, CommentRequest commentRequest) {
+    public CommentResponse updateComment(Long commentId, CommentRequest commentRequest,String username) {
         Comment comment = findComment(commentId);
-        validateCommentOwner(comment);
+        validateCommentOwner(comment,username);
         comment.update(commentRequest.getContent());
         commentRepository.save(comment);
         return commentMapper.toCommentResponse(comment);
     }
 
     @Override
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId,String username) {
         Comment comment = findComment(commentId);
-        validateCommentOwner(comment);
+        validateCommentOwner(comment,username);
         comment.softDelete();
         commentRepository.save(comment);
     }
@@ -59,11 +61,10 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new CommentNotFoundException("해당 댓글을 찾을수 없습니다."));
     }
 
-    private void validateCommentOwner(Comment comment) {
-        User currentUser = SecurityUtils.getCurrentUser();
-        if (!comment.getUser().equals(currentUser)) {
+    private void validateCommentOwner(Comment comment,String username) {
+        User user = userService.getUserByName(username);
+        if (!comment.getUser().equals(user)) {
             throw new SecurityException("댓글의 작성자만 가능한 기능입니다.");
         }
     }
-
 }

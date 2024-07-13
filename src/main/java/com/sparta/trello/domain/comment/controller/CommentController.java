@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,20 +21,27 @@ public class CommentController {
 
     @PostMapping("/{cardId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<CommentResponse> createComment(@PathVariable Long cardId, @RequestBody CommentRequest commentRequest) {
-        CommentResponse commentResponse = commentService.createComment(cardId, commentRequest);
+    public ResponseEntity<CommentResponse> createComment(@PathVariable Long cardId,
+                                                         @RequestBody CommentRequest commentRequest,
+                                                         @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        CommentResponse commentResponse = commentService.createComment(cardId, commentRequest, username);
         return new ResponseEntity<>(commentResponse, HttpStatus.CREATED);
     }
 
     @PatchMapping("/{commentId}")
-    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
-        CommentResponse commentResponse = commentService.updateComment(commentId, commentRequest);
+    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long commentId,
+                                                         @RequestBody CommentRequest commentRequest,
+                                                         @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        CommentResponse commentResponse = commentService.updateComment(commentId, commentRequest, username);
         return new ResponseEntity<>(commentResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
-        commentService.deleteComment(commentId);
+    public ResponseEntity<String> deleteComment(@PathVariable Long commentId,@AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        commentService.deleteComment(commentId,username);
         return new ResponseEntity<>("댓글이 삭제되었습니다.", HttpStatus.OK);
     }
 

@@ -121,10 +121,10 @@ public class CardServiceImpl implements CardService {
     }
 
     private void validateCardOwner(Card card) {
-        User currentUser = SecurityUtils.getCurrentUser();
-        if (!card.getManager().equals(currentUser)) {
-            throw new SecurityException("카드의 작성자만 가능한 기능입니다.");
-        }
+//        User currentUser = SecurityUtils.getCurrentUsername();
+//        if (!card.getManager().equals(currentUser)) {
+//            throw new SecurityException("카드의 작성자만 가능한 기능입니다.");
+//        }
     }
 }
 

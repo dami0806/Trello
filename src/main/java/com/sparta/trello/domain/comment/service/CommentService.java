@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface CommentService {
-    CommentResponse createComment(Long cardId, CommentRequest commentRequest);
-    CommentResponse updateComment(Long commentId, CommentRequest commentRequest);
-    void deleteComment(Long commentId);
+    CommentResponse createComment(Long cardId, CommentRequest commentRequest,String username);
+    CommentResponse updateComment(Long commentId, CommentRequest commentRequest,String username);
+    void deleteComment(Long commentId,String username);
 }

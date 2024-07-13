@@ -5,17 +5,22 @@ import com.sparta.trello.domain.auth.dto.request.SignupRequest;
 import com.sparta.trello.domain.auth.dto.response.LoginResponse;
 import com.sparta.trello.domain.auth.dto.response.TokenResponseDto;
 import com.sparta.trello.domain.auth.util.JwtUtil;
+import com.sparta.trello.domain.boardInvitaion.service.BoardInvitationService;
+import com.sparta.trello.domain.role.entity.Role;
+import com.sparta.trello.domain.user.dto.UserResponse;
 import com.sparta.trello.domain.user.entity.User;
 
-import com.sparta.trello.domain.user.entity.UserRole;
 import com.sparta.trello.domain.user.entity.UserStatus;
 import com.sparta.trello.domain.user.repository.UserRepository;
+import com.sparta.trello.domain.userRole.entity.UserRole;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -23,10 +28,12 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final BoardInvitationService invitationService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
 
+    @Transactional
     @Override
     public void signup(SignupRequest signupRequest) {
         String password = signupRequest.getPassword();
@@ -48,13 +55,24 @@ public class UserServiceImpl implements UserService {
                 .username(signupRequest.getUsername())
                 .email(email)
                 .password(encodedPassword)
-                .userStatus(UserStatus.ACTIVE)
-                .userRole(signupRequest.getUserRole())
+                .userStatus(UserStatus.LOGOUT)
+                        .build();
+        userRepository.save(user);
+
+        Role userRole = userRepository.getRoleByName("ROLE_USER");
+        if (userRole == null) {
+            throw new RuntimeException("기본 사용자 역할을 찾을 수 없습니다.");
+        }
+
+        UserRole userRoleEntity = UserRole.builder()
+                .user(user)
+                .role(userRole)
                 .build();
 
+        user.getRoles().add(userRoleEntity);
         userRepository.save(user);
     }
-
+    @Transactional
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
         User user = userRepository.findByUsername(loginRequest.getEmail())
@@ -81,6 +99,7 @@ public class UserServiceImpl implements UserService {
      * @param email
      * @param accessToken
      */
+    @Transactional
     @Override
     public void logout(String email, String accessToken) {
         // User 찾기
@@ -101,6 +120,7 @@ public class UserServiceImpl implements UserService {
      * @param accessToken
      * @param refreshToken
      */
+    @Transactional
     @Override
     public void withdraw(String email, String password, String accessToken, String refreshToken) {
         // User 찾기
@@ -128,6 +148,7 @@ public class UserServiceImpl implements UserService {
      * @param refreshToken
      * @return TokenResponseDto
      */
+    @Transactional
     @Override
     public TokenResponseDto refresh(String refreshToken) {
         String email = jwtUtil.getUsernameFromToken(refreshToken);
@@ -151,25 +172,27 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 
+    @Override
     public User getUserByName(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 
-//    @Override
-//    public User getCurrentAdmin() {
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        String username;
-//        if (principal instanceof UserDetails) {
-//            username = ((UserDetails) principal).getUsername();
-//        } else {
-//            username = principal.toString();
-//        }
-//        User user = userRepository.findByEmail(username)
-//                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-//        if (user.getUserRole() != UserRole.MANAGER) {
-//            throw new IllegalArgumentException("Current user is not an admin");
-//        }
-//        return user;
-//    }
-//
+    @Override
+    public List<UserResponse> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(UserResponse::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserResponse> getUsersNotInvitedToBoard(Long boardId) {
+        return userRepository.getUsersNotInvitedToBoard(boardId).stream()
+                .map(UserResponse::new)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<UserResponse> getUsersInvitedToBoard(Long boardId) {
+        return userRepository.getUsersInvitedToBoard(boardId).stream()
+                .map(UserResponse::new)
+                .collect(Collectors.toList());
+    }
 }

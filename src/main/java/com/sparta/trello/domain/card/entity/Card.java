@@ -38,7 +38,7 @@ public class Card extends BaseEntity {
     @JoinColumn(name = "trelloColumn_id",nullable = false)
     private TrelloColumn trelloColumn;
 
-    private int position;
+    private long position;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)

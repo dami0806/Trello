@@ -33,10 +33,9 @@ public class TrelloColumnController {
                                           @RequestBody TrelloCreateColumnRequestDto requestDto,
                                           @AuthenticationPrincipal UserDetails userDetails) {
 
-        SecurityUtils.validdateUserDetails(userDetails);
-		checkBoardMemberOrManager(boardId, userDetails.getUsername());
+		checkAuthAndRole(boardId,userDetails);
 
-        TrelloCreateColumnRequestDto updatedRequestDto = new TrelloCreateColumnRequestDto(
+		TrelloCreateColumnRequestDto updatedRequestDto = new TrelloCreateColumnRequestDto(
 				requestDto.columns_title(),
 				boardId,
 				requestDto.newPosition());
@@ -47,20 +46,20 @@ public class TrelloColumnController {
     @DeleteMapping("/{columnId}")
     public ResponseEntity<?> deleteColumn(@PathVariable Long boardId, @PathVariable Long columnId,
                                           @AuthenticationPrincipal UserDetails userDetails) {
-		SecurityUtils.validdateUserDetails(userDetails);
-		checkBoardMemberOrManager(boardId, userDetails.getUsername());
+		checkAuthAndRole(boardId,userDetails);
 
-        return trelloColumnService.deleteColumn(boardId, columnId);
+
+		return trelloColumnService.deleteColumn(boardId, columnId);
     }
 
 	// 수정
     @PatchMapping("/{columnId}/restore")
     public ResponseEntity<?> restoreColumn(@PathVariable Long boardId, @PathVariable Long columnId,
                                            @AuthenticationPrincipal UserDetails userDetails) {
-		SecurityUtils.validdateUserDetails(userDetails);
-		checkBoardMemberOrManager(boardId, userDetails.getUsername());
+		checkAuthAndRole(boardId,userDetails);
 
-        return trelloColumnService.restoreColumn(boardId, columnId);
+
+		return trelloColumnService.restoreColumn(boardId, columnId);
     }
 
 	// 위치 이동
@@ -68,10 +67,9 @@ public class TrelloColumnController {
     public ResponseEntity<?> moveColumn(@PathVariable Long boardId, @PathVariable Long columnId,
                                         @RequestParam int newPosition,
                                         @AuthenticationPrincipal UserDetails userDetails) {
-		SecurityUtils.validdateUserDetails(userDetails);
-		checkBoardMemberOrManager(boardId, userDetails.getUsername());
+		checkAuthAndRole(boardId,userDetails);
 
-        return trelloColumnService.moveColumn(boardId, columnId, newPosition);
+		return trelloColumnService.moveColumn(boardId, columnId, newPosition);
     }
 
 	// 권한 검증
@@ -79,5 +77,10 @@ public class TrelloColumnController {
 		if (!boardService.isBoardMemberOrManager(boardId, username)) {
 			throw new UnauthorizedException("해당 보드에 컬럼을 생성할 권한이 없습니다.");
 		}
+	}
+	private void checkAuthAndRole(Long boardId,  UserDetails userDetails) {
+		String username = userDetails.getUsername();
+		SecurityUtils.validdateUserDetails(userDetails);
+		checkBoardMemberOrManager(boardId, username);
 	}
 }

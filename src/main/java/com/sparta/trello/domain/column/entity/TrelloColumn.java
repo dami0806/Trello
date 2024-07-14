@@ -67,4 +67,8 @@ public class TrelloColumn extends BaseEntity {
 	public void updatePosition(int position) {
 		this.position = position;
 	}
+
+	public void updateOrderCars(List<Card> orderedCards) {
+		this.cards = orderedCards;
+	}
 }

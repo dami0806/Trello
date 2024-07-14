@@ -129,9 +129,24 @@ public class TrelloColumnServiceImpl implements TrelloColumnService {
         return columnRepository.findById(id).orElse(null);
     }
 
+
     @Override
+	@Transactional(readOnly = true)
     public TrelloColumnResponse getColumnDetails(Long columnId) {
         TrelloColumn column = checkColumn(columnId);
+
+		List<Card> cards= column.getCards();
+		List<Long> cardOrder = column.getCardOrder();
+
+		List<Card> orderedCards = cardOrder.stream()
+				.map(orderId -> cards.stream()
+						.filter(card -> card.getId().equals(orderId))
+						.findFirst()
+						.orElse(null))
+						.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+
+		column.updateOrderCars(orderedCards);
 
 		return trelloColumnMapper.toTrelloColumnResponse(column);
     }

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public interface TrelloColumnMapper {
 
-    
+
     @Mapping(source = "id", target = "id")
     @Mapping(source = "title", target = "title")
     @Mapping(source = "position", target = "position")
@@ -32,6 +32,7 @@ public interface TrelloColumnMapper {
     @Named("mapCards")
     default List<CardResponse> mapCards(List<Card> cards) {
         CardMapper cardMapper = Mappers.getMapper(CardMapper.class);
+        // order 순
 
         return cards.stream()
                 .map(cardMapper::toCardResponse)

@@ -25,8 +25,4 @@ public class BoardInvitationServiceImpl implements BoardInvitationService {
         boardInvitationRepository.save(invitation);
     }
 
-    @Override
-    public List<User> getUsersByBoardId(Long boardId) {
-        return boardInvitationRepository.findUsersByBoardId(boardId);
-    }
 }

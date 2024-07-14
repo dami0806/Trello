@@ -50,7 +50,7 @@ public class CardServiceImpl implements CardService {
                 .title(cardRequest.getTitle())
                 .description(cardRequest.getDescription())
                 .trelloColumn(findTrelloColumn(columnId))
-                .position(getPosition(columnId))
+               // .position(getPosition(columnId))
                 .build();
 
         saveCard(card);

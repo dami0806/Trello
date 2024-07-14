@@ -39,17 +39,11 @@ public class Card extends BaseEntity {
     @JoinColumn(name = "trelloColumn_id",nullable = false)
     private TrelloColumn trelloColumn;
 
-    private long position;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CardStatus status = CardStatus.ACTIVE;
-
-    // 카드 위치 변경
-    public void updatePosition(int position) {
-        this.position = position;
-    }
 
     // 카드 컬럼 변경
     public void updateColumn(TrelloColumn trelloColumn) {

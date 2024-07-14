@@ -14,7 +14,6 @@ public class CardResponse {
     private String title;
     private String description;
     private String manager;
-    private int position;
 
     private Long trelloColumnId;
 

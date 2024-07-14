@@ -49,13 +49,6 @@ public class TrelloColumn extends BaseEntity {
 	@Column(nullable = false)
 	private TrelloColumnStatus status = TrelloColumnStatus.ACTIVE;
 
-	public void addCard(Long cardId) {
-		// 최대 15개
-		if(cards.size() >= 15) {
-			throw new DatabaseAccessException("한 컬럼에 카드는 15개까지 가능합니다.");
-		}
-		cardOrder.add(cardId);
-	}
 
 	public void removeCard(Long cardId) {
 		cardOrder.remove(cardId);

@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
         String refreshToken = jwtUtil.createRefreshToken(user.getEmail());
 
         user.updateRefreshToken(refreshToken);
-        user.updateUserStatus(UserStatus.ACTIVE);
+        user.login();
         userRepository.save(user);
 
         return new LoginResponse(accessToken, refreshToken);
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public void withdraw(String email, String password, String accessToken, String refreshToken) {
+    public void withdraw(String email, String password, String accessToken) {
         // User 찾기
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new IllegalArgumentException("사용자를 찾을 수 없습니다.")

@@ -22,10 +22,10 @@ public interface UserService {
     TokenResponseDto refresh(String refreshToken);
 
     // 로그아웃
-    void logout(String userId, String accessToken);
+    void logout(String email, String accessToken);
 
     // 탈퇴
-    void withdraw(String userId, String password, String accessToken, String refreshToken);
+    void withdraw(String email, String password, String accessToken);
 
     User getUserById(Long id);
 

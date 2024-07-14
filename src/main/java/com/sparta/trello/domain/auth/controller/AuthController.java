@@ -55,27 +55,26 @@ public class AuthController {
     /**
      * 로그아웃
      *
-     * @param userId
+     * @param email
      * @param accessToken
      * @return
      */
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestParam String userId, String accessToken) {
-        userService.logout(userId, accessToken);
+    public ResponseEntity<String> logout(@RequestParam String email, String accessToken) {
+        userService.logout(email, accessToken);
         return ResponseEntity.status(HttpStatus.OK).body("로그아웃 되었습니다");
     }
 
     /**
      * 회원탈퇴
      *
-     * @param userId
+     * @param email
      * @param accessToken
-     * @param refreshToken
      * @return
      */
     @PatchMapping("/withdraw")
-    public ResponseEntity<String> withdraw(@RequestParam String userId, String password, String accessToken, String refreshToken) {
-        userService.withdraw(userId, password, accessToken, refreshToken);
+    public ResponseEntity<String> withdraw(@RequestParam String email, String password, String accessToken) {
+        userService.withdraw(email, password, accessToken);
         return ResponseEntity.status(HttpStatus.OK).body("회원탈퇴가 완료되었습니다.");
     }
 

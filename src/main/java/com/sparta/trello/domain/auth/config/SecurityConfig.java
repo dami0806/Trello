@@ -1,6 +1,6 @@
 package com.sparta.trello.domain.auth.config;
 
-import com.sparta.trello.domain.auth.config.filter.JwtAuthenticationFilter;
+import com.sparta.trello.domain.auth.filter.JwtAuthenticationFilter;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,8 +43,9 @@ public class SecurityConfig {
                                 authorizeHttpRequests
                                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll() // 로그인, 회원가입 접근 허용
-                                        .requestMatchers(HttpMethod.POST, "/boards/*/columns").authenticated()
-                                        .requestMatchers(HttpMethod.POST, "/boards").permitAll()
+                                        .requestMatchers(HttpMethod.POST, "/boards/*").authenticated()
+                                        .requestMatchers(HttpMethod.POST, "/boards").hasRole("MANAGER")
+
                                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                         .anyRequest().permitAll() // 그 외 모든 요청 접근 허용
                         //.anyRequest().authenticated() // 그 외 모든 요청 인증처리

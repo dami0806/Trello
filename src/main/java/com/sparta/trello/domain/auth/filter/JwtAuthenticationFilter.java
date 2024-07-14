@@ -1,8 +1,5 @@
-package com.sparta.trello.domain.auth.config.filter;
+package com.sparta.trello.domain.auth.filter;
 
-
-import com.sparta.trello.domain.auth.entity.Auth;
-import com.sparta.trello.domain.auth.repository.AuthRepository;
 import com.sparta.trello.domain.auth.service.UserDetailsServiceImpl;
 import com.sparta.trello.domain.auth.util.JwtUtil;
 import com.sparta.trello.domain.user.entity.User;
@@ -29,13 +26,18 @@ import java.util.Optional;
  * 유효한 토큰이면 사용자 정보를 SecurityContext에 저장
  */
 @Component
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
-    private final AuthRepository authRepository;
     private final UserRepository userRepository;
+
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService,
+                                   UserRepository userRepository) {
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
+        this.userRepository = userRepository;
+    }
 
     /**
      * 요청 필터링: JWT 토큰을 검증해서 유효하면 사용자 정보 설정
@@ -65,33 +67,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 사용자 이름이 존재하고, 현재 SecurityContext에 인증 정보가 없는 경우
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            Optional<Auth> optionalAuth = authRepository.findByName(username);
-            if (optionalAuth.isPresent()) {
-                Auth auth = optionalAuth.get();
-                User user = auth.getUser();
+
+            // 사용자 정보를 DB에서 조회 (refreshToken을 조회하기 위함)
+            Optional<User> optionalUser = userRepository.findByUsername(username);
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
                 String refreshToken = user.getRefreshToken();
 
+                // userStatus가 WITHDRAWN인 경우
                 if (user.getUserStatus().equals(UserStatus.WITHDRAWN)) {
-                    response.setCharacterEncoding("UTF-8");
+                    response.setCharacterEncoding("UTF-8"); // 한국어 설정
                     response.getWriter().write("탈퇴한 회원입니다.");
                     return;
                 }
-
+                // refreshToken이 비어있다면 다시 로그인 유도
                 if (refreshToken == null) {
                     response.setCharacterEncoding("UTF-8");
                     response.getWriter().write("다시 로그인하세요");
                     return;
                 }
 
+                // JWT 토큰이 유효한 경우
                 if (jwtUtil.validateToken(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                            new UsernamePasswordAuthenticationToken(userDetails,
+                                    null,
+                                    userDetails.getAuthorities());
                     usernamePasswordAuthenticationToken
                             .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }
             }
         }
+        // 다음 필터로 요청을 전달
         chain.doFilter(request, response);
     }
 }

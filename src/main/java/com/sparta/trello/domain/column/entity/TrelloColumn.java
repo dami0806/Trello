@@ -1,22 +1,15 @@
 package com.sparta.trello.domain.column.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.sparta.trello.domain.board.entity.Board;
 import com.sparta.trello.domain.card.entity.Card;
+import com.sparta.trello.domain.card.exception.DatabaseAccessException;
 import com.sparta.trello.domain.common.entity.BaseEntity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import com.sparta.trello.domain.common.util.OrderConverter;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,13 +35,28 @@ public class TrelloColumn extends BaseEntity {
 	private Board board;
 
 	// card와 매핑
-	@OneToMany(mappedBy = "trelloColumn", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "trelloColumn")
 	private List<Card> cards;
+
+
+	@Convert(converter = OrderConverter.class)
+	@Column(name = "card_order")
+	private List<Long> cardOrder = new ArrayList<>();
+
 
 	@Builder.Default
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private TrelloColumnStatus status = TrelloColumnStatus.ACTIVE;
+
+
+	public void removeCard(Long cardId) {
+		cardOrder.remove(cardId);
+	}
+
+	public void updateCardOrder(List<Long> newCardOrder) {
+		this.cardOrder = newCardOrder;
+	}
 
 	public void softDelete() {
 		this.status = TrelloColumnStatus.DELETED;
@@ -58,5 +66,9 @@ public class TrelloColumn extends BaseEntity {
 	}
 	public void updatePosition(int position) {
 		this.position = position;
+	}
+
+	public void updateOrderCars(List<Card> orderedCards) {
+		this.cards = orderedCards;
 	}
 }

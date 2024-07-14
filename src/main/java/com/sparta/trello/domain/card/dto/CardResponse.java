@@ -14,15 +14,10 @@ public class CardResponse {
     private String title;
     private String description;
     private String manager;
-    private int position;
 
     private Long trelloColumnId;
-    private List<CommentResponse> comments;
 
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
 
-    public void updateComments(List<CommentResponse> commentResponses) {
-        this.comments = commentResponses;
-    }
 }

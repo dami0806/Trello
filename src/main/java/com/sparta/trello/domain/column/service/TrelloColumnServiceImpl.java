@@ -2,6 +2,7 @@ package com.sparta.trello.domain.column.service;
 
 import com.sparta.trello.domain.card.dto.CardResponse;
 import com.sparta.trello.domain.card.entity.Card;
+import com.sparta.trello.domain.card.entity.CardStatus;
 import com.sparta.trello.domain.card.mapper.CardMapper;
 import com.sparta.trello.domain.card.service.CardService;
 import com.sparta.trello.domain.card.service.CardServiceImpl;
@@ -135,7 +136,10 @@ public class TrelloColumnServiceImpl implements TrelloColumnService {
     public TrelloColumnResponse getColumnDetails(Long columnId) {
         TrelloColumn column = checkColumn(columnId);
 
-		List<Card> cards= column.getCards();
+		List<Card> cards= column.getCards().stream()
+				.filter(card -> card.getStatus() == CardStatus.ACTIVE)
+				.collect(Collectors.toList());
+
 		List<Long> cardOrder = column.getCardOrder();
 
 		List<Card> orderedCards = cardOrder.stream()

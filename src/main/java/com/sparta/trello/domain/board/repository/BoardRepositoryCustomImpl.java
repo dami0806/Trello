@@ -19,6 +19,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
         long count = queryFactory.selectFrom(boardInvitation)
                 .where(boardInvitation.board.boardId.eq(boardId)
                         .and(boardInvitation.user.eq(user))
+                        .and(boardInvitation.status.eq("ACCEPTED"))
                         .and(boardInvitation.role.eq("MANAGER")))
                 .fetchCount();
 

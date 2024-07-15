@@ -7,6 +7,4 @@ import java.util.List;
 
 public interface BoardInvitationService {
     void inviteUserToBoard(User user, Board board, String role);
-
-    List<User> getUsersByBoardId(Long boardId);
 }

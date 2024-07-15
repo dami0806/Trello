@@ -2,6 +2,7 @@ package com.sparta.trello.domain.card.controller;
 
 import com.sparta.trello.domain.auth.exception.UnauthorizedException;
 import com.sparta.trello.domain.board.service.BoardService;
+import com.sparta.trello.domain.card.dto.CardDetailResponse;
 import com.sparta.trello.domain.card.dto.CardRequest;
 import com.sparta.trello.domain.card.dto.CardResponse;
 import com.sparta.trello.domain.card.service.CardService;
@@ -44,7 +45,7 @@ public class CardController {
                                                    @AuthenticationPrincipal UserDetails userDetails) {
         checkAuthAndRole(boardId,userDetails);
 
-        CardResponse cardResponse = cardService.updateCard(columnId,cardId, cardRequest);
+        CardResponse cardResponse = cardService.updateCard(columnId,cardId, cardRequest, userDetails.getUsername());
         return new ResponseEntity<>(cardResponse, HttpStatus.OK);
     }
 
@@ -56,7 +57,7 @@ public class CardController {
                                              @AuthenticationPrincipal UserDetails userDetails) {
 
         checkAuthAndRole(boardId,userDetails);
-        cardService.deleteCard(cardId);
+        cardService.deleteCard(cardId,userDetails.getUsername());
         return new ResponseEntity<>("카드 삭제하기 성공", HttpStatus.OK);
     }
 
@@ -75,15 +76,16 @@ public class CardController {
     // 카드 상세 보기
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{cardId}")
-    public ResponseEntity<CardResponse> getCardById(@PathVariable Long boardId,
+    public ResponseEntity<CardDetailResponse> getCardById(@PathVariable Long boardId,
                                                     @PathVariable Long columnId,
                                                     @PathVariable Long cardId,
                                                     Pageable pageable,
                                                     @AuthenticationPrincipal UserDetails userDetails) {
         checkAuthAndRole(boardId,userDetails);
-        CardResponse cardResponse = cardService.getCardById(cardId, pageable);
+        CardDetailResponse cardResponse = cardService.getCardDetailById(cardId, pageable);
         return new ResponseEntity<>(cardResponse, HttpStatus.OK);
     }
+
     // 권한 검증
     private void checkBoardMemberOrManager(Long boardId, String username) {
         if (!boardService.isBoardMemberOrManager(boardId, username)) {

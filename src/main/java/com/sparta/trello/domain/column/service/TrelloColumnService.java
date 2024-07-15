@@ -1,5 +1,7 @@
 package com.sparta.trello.domain.column.service;
 
+import com.sparta.trello.domain.column.dto.response.TrelloColumnResponse;
+import com.sparta.trello.domain.column.dto.response.TrelloColumnResponseDto;
 import org.springframework.http.ResponseEntity;
 
 import com.sparta.trello.domain.column.dto.request.TrelloCreateColumnRequestDto;
@@ -15,4 +17,6 @@ public interface TrelloColumnService {
 	ResponseEntity<?> moveColumn(Long boardId, Long ColumnId, int newPosition);
 
 	TrelloColumn findById(Long id);
+
+	TrelloColumnResponse getColumnDetails(Long columnId);
 }

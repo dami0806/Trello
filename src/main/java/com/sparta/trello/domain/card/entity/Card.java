@@ -8,6 +8,7 @@ import com.sparta.trello.domain.column.entity.TrelloColumn;
 
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,8 +28,8 @@ public class Card extends BaseEntity {
     @Column(nullable = false)
     private String description;
 
-    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
+    @OneToMany(mappedBy = "card")
+    private List<Comment> comments = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -38,16 +39,13 @@ public class Card extends BaseEntity {
     @JoinColumn(name = "trelloColumn_id",nullable = false)
     private TrelloColumn trelloColumn;
 
-    private long position;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CardStatus status = CardStatus.ACTIVE;
 
-    public void updatePosition(int position) {
-        this.position = position;
-    }
+    // 카드 컬럼 변경
     public void updateColumn(TrelloColumn trelloColumn) {
         this.trelloColumn = trelloColumn;
     }

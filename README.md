@@ -17,9 +17,19 @@
  **기존 fetchCount() 사용** -> fetchOne() + select(qComment.count()) @BatchSize(size = 10)
  **Card에서 comment를 가져올때** -> 복합 인덱스사용
 
-<img width="1015" alt="image" src="https://github.com/user-attachments/assets/a354d877-5982-43d8-ab8d-a20974ecf890"> 
+### 1. BoardRepositoryCustomImpl의 isBoardManager 메서드
 
-**카드 순서 관리 성능 문제 및 비정규화 도입**  
+**1-1)특정 보드의 매니저인지 확인**  
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/eea69147-25e9-452f-b123-cdb0b497fe03">  
+
+**1-2) BoardRepositoryCustomImpl의 isBoardMember 메서드: 특정 보드의 사용자가 accepted인 member인지, 또 Manager인지**  
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/4c8f2bae-b6a7-468e-9096-73330a1cf315">  
+
+**2.특정보드에 초대된 사용자인지, 사용자가 아닌지 로직**  
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/b007b30a-dbe6-4bdb-a901-4de4b681c67b">  
+
+**3.카드 순서 관리 성능 문제 및 비정규화 도입**   
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/a354d877-5982-43d8-ab8d-a20974ecf890">  
 각 카드가 자신의 위치를 개별적으로 관리하도록 설계했기 때문에, 카드 위치를 변경할 때마다 모든 카드를 업데이트해야 했기 때문에,   
 모든 카드의 position 필드를 일일이 업데이트하는 방식은 데이터베이스 업데이트 횟수가 많을수록 성능이 저하되는 문제  
 카드뿐 만 아니라 여러 요소에서 드래그 앤 드롭으로 위치를 수정하는 기능이 많기때문에  

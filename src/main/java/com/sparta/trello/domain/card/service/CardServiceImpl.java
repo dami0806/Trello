@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class CardServiceImpl implements CardService {
     private final CommentMapper commentMapper;
 
     //card 생성
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED, timeout = 5)
     @Override
     public CardResponse createCard(Long columnId, CardRequest cardRequest, String username) {
         User user = userService.getUserByName(username);
@@ -64,7 +65,7 @@ public class CardServiceImpl implements CardService {
     }
 
     //card 수정
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED, timeout = 5)
     @Override
     public CardResponse updateCard(Long columnId, Long cardId, CardRequest cardRequest, String username) {
         Card card = findCard(cardId);
@@ -77,7 +78,7 @@ public class CardServiceImpl implements CardService {
     }
 
     // card 위치 수정
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED, timeout = 5)
     @Override
     public void updateCardPosition(Long cardId, int newPosition, Long newColumnId) {
 
@@ -110,7 +111,7 @@ public class CardServiceImpl implements CardService {
     }
 
     // card 삭제
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED, timeout = 5)
     @Override
     public void deleteCard(Long cardId, String username) {
         Card card = findCard(cardId);
@@ -157,8 +158,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public Card findCard(Long cardId) {
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new DatabaseAccessException("Card 데이터가 없습니다."));
+        Card card = cardRepository.findByIdWithLock(cardId) ;
         return card;
     }
 

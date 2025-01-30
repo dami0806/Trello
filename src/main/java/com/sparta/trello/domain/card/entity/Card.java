@@ -13,6 +13,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -38,6 +39,20 @@ public class Card extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "trelloColumn_id",nullable = false)
     private TrelloColumn trelloColumn;
+
+    @ManyToOne
+    @JoinColumn(name = "prev_card_id")
+    private Card prevCard;
+
+    @ManyToOne
+    @JoinColumn(name = "next_card_id")
+    private Card nextCard;
+
+
+    public void updateCardOrder(Card prev, Card next) {
+        this.prevCard = prev;
+        this.nextCard = next;
+    }
 
 
     @Builder.Default

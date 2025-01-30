@@ -38,31 +38,49 @@ public class CardServiceImpl implements CardService {
     private final CommentMapper commentMapper;
 
     //card 생성
-    @Transactional(isolation = Isolation.READ_COMMITTED, timeout = 5)
+    @Transactional
     @Override
-    public CardResponse createCard(Long columnId, CardRequest cardRequest, String username) {
+    public CardResponse createCard(Long columnId, CardRequest cardRequest, Long targetPrevCardId, String username) {
         User user = userService.getUserByName(username);
-        TrelloColumn column = findTrelloColumn(columnId);
+        TrelloColumn column = trelloColumnService.findById(columnId);
 
-        maxCardCount(columnId);
+        // **삽입 위치 찾기**
+        Card prevCard = targetPrevCardId != null ? findCard(targetPrevCardId) : null;
 
+        // ❗ `targetPrevCardId`가 없으면 컬럼에서 가장 마지막 카드를 가져오기
+        if (prevCard == null) {
+            prevCard = cardRepository.findLastCardByColumnId(columnId);
+        }
+
+        Card nextCard = prevCard != null ? prevCard.getNextCard() : null;
+
+        // **새 카드 생성**
         Card card = Card.builder()
                 .manager(user)
                 .title(cardRequest.getTitle())
                 .description(cardRequest.getDescription())
-                .trelloColumn(findTrelloColumn(columnId))
-               // .position(getPosition(columnId))
+                .trelloColumn(column)
+                .prevCard(prevCard)
+                .nextCard(nextCard)
                 .build();
 
-        saveCard(card);
+        // **먼저 카드 저장**
+        cardRepository.save(card);
 
-        // 컬럼의 카드 순서 업데이트
-        List<Long> cardOrder = column.getCardOrder();
-        cardOrder.add(card.getId());
-        column.updateCardOrder(cardOrder);
+        // **Linked List 연결 업데이트**
+        if (prevCard != null) {
+            prevCard.setNextCard(card);
+            cardRepository.save(prevCard);
+        }
+
+        if (nextCard != null) {
+            nextCard.setPrevCard(card);
+            cardRepository.save(nextCard);
+        }
 
         return cardMapper.toCardResponse(card);
     }
+
 
     //card 수정
     @Transactional(isolation = Isolation.READ_COMMITTED, timeout = 5)
@@ -78,37 +96,44 @@ public class CardServiceImpl implements CardService {
     }
 
     // card 위치 수정
-    @Transactional(isolation = Isolation.READ_COMMITTED, timeout = 5)
+    @Transactional
     @Override
-    public void updateCardPosition(Long cardId, int newPosition, Long newColumnId) {
-
+    public void updateCardPosition(Long cardId, Long targetPrevCardId, Long newColumnId) {
         Card card = findCard(cardId);
-
-        TrelloColumn currentColumn = card.getTrelloColumn();
         TrelloColumn newColumn = trelloColumnService.findById(newColumnId);
 
-        maxCardCount(newColumn.getId());
-        validatePosition(newColumnId, newPosition);
-
-        // 기존 컬럼에서 카드 제거
-        List<Long> currentCardOrder = currentColumn.getCardOrder();
-
-        currentCardOrder.remove(card.getId());
-        currentColumn.updateCardOrder(currentCardOrder);
-
-        // 새 컬럼의 카드 순서 업데이트
-        List<Long> newCardOrder = newColumn.getCardOrder();
-        if (newPosition >= newCardOrder.size()) {
-            newCardOrder.add(card.getId()); // 리스트 끝에 추가
-        } else {
-            newCardOrder.add(newPosition, card.getId()); // 지정된 위치에 추가
+        // 기존 컬럼에서 카드 제거 (기존 prev, next 카드 연결 복구)
+        if (card.getPrevCard() != null) {
+            card.getPrevCard().setNextCard(card.getNextCard());
+            cardRepository.save(card.getPrevCard());
         }
-        newColumn.updateCardOrder(newCardOrder);
+        if (card.getNextCard() != null) {
+            card.getNextCard().setPrevCard(card.getPrevCard());
+            cardRepository.save(card.getNextCard());
+        }
 
-        // 카드의 컬럼 변경
+        // 새로운 위치에서 prevCard, nextCard 찾기
+        Card prevCard = targetPrevCardId != null ? findCard(targetPrevCardId) : null;
+        Card nextCard = prevCard != null ? prevCard.getNextCard() : null;
+
+        // 새 위치에서 카드 연결
+        card.setPrevCard(prevCard);
+        card.setNextCard(nextCard);
         card.updateColumn(newColumn);
-        saveCard(card);
+
+        // **카드 먼저 저장**
+        cardRepository.save(card);
+
+        if (prevCard != null) {
+            prevCard.setNextCard(card);
+            cardRepository.save(prevCard);
+        }
+        if (nextCard != null) {
+            nextCard.setPrevCard(card);
+            cardRepository.save(nextCard);
+        }
     }
+
 
     // card 삭제
     @Transactional(isolation = Isolation.READ_COMMITTED, timeout = 5)

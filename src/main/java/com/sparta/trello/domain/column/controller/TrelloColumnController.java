@@ -27,19 +27,23 @@ public class TrelloColumnController {
 	private final BoardService boardService;
 
 	// 생성
-    @PostMapping
-    public ResponseEntity<?> createColumn(@PathVariable Long boardId,
-                                          @RequestBody TrelloCreateColumnRequestDto requestDto,
-                                          @AuthenticationPrincipal UserDetails userDetails) {
+	@PostMapping
+	public ResponseEntity<?> createColumn(@PathVariable Long boardId,
+										  @RequestBody TrelloCreateColumnRequestDto requestDto,
+										  @RequestParam(required = false) Long targetPrevColumnId,
+										  @AuthenticationPrincipal UserDetails userDetails) {
+		checkAuthAndRole(boardId, userDetails);
 
-		checkAuthAndRole(boardId,userDetails);
-
+		// DTO에서 boardId가 null일 경우 설정
 		TrelloCreateColumnRequestDto updatedRequestDto = new TrelloCreateColumnRequestDto(
 				requestDto.columns_title(),
-				boardId,
-				requestDto.newPosition());
-        return trelloColumnService.createColumn(updatedRequestDto);
-    }
+				boardId,  // 여기에서 boardId 설정
+				requestDto.newPosition()
+		);
+
+		return trelloColumnService.createColumn(updatedRequestDto, targetPrevColumnId);
+	}
+
 
 	// 삭제
     @DeleteMapping("/{columnId}")
@@ -73,14 +77,16 @@ public class TrelloColumnController {
 
 
 	// 위치 이동
-    @PatchMapping("/{columnId}/position")
-    public ResponseEntity<?> moveColumn(@PathVariable Long boardId, @PathVariable Long columnId,
-                                        @RequestParam int newPosition,
-                                        @AuthenticationPrincipal UserDetails userDetails) {
-		checkAuthAndRole(boardId,userDetails);
+	// 컬럼 위치 이동 (Linked List 기반)
+	@PatchMapping("/{columnId}/position")
+	public ResponseEntity<?> moveColumn(@PathVariable Long boardId,
+										@PathVariable Long columnId,
+										@RequestParam(required = false) Long targetPrevColumnId,
+										@AuthenticationPrincipal UserDetails userDetails) {
+		checkAuthAndRole(boardId, userDetails);
+		return trelloColumnService.moveColumn(boardId, columnId, targetPrevColumnId);
+	}
 
-		return trelloColumnService.moveColumn(boardId, columnId, newPosition);
-    }
 
 	// 권한 검증
 	private void checkBoardMemberOrManager(Long boardId, String username) {

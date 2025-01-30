@@ -38,39 +38,43 @@ public class TrelloColumnServiceImpl implements TrelloColumnService {
 
     @Transactional
     @Override
-    public ResponseEntity<?> createColumn(TrelloCreateColumnRequestDto requestDto) {
+    public ResponseEntity<?> createColumn(TrelloCreateColumnRequestDto requestDto, Long targetPrevColumnId) {
         columnRepository.findByTitle(requestDto.columns_title()).ifPresent(trelloColumn -> {
-            throw new DatabaseAccessException("컬럼이름이 중복됩니다.");
+            throw new DatabaseAccessException("컬럼 이름이 중복됩니다.");
         });
 
-        Optional<Board> optionalBoard = boardRepository.findById(requestDto.boardId());
-        Board board = optionalBoard.orElseThrow(
-                () -> new DatabaseAccessException("BOARD NOT FOUND")
-        );
+        Board board = boardRepository.findById(requestDto.boardId())
+                .orElseThrow(() -> new DatabaseAccessException("BOARD NOT FOUND"));
 
-        int position = requestDto.newPosition();
+        TrelloColumn prevColumn = targetPrevColumnId != null ? columnRepository.findById(targetPrevColumnId).orElse(null) : null;
+        TrelloColumn nextColumn = prevColumn != null ? prevColumn.getNextColumn() : null;
 
+        // 새 컬럼 생성
         TrelloColumn column = TrelloColumn.builder()
                 .title(requestDto.columns_title())
                 .board(board)
                 .status(TrelloColumnStatus.ACTIVE)
-                .position(position)
+                .prevColumn(prevColumn)
+                .nextColumn(nextColumn)
                 .build();
 
-        List<TrelloColumn> columns = columnRepository.findByBoardAndStatusOrderByPosition(board, TrelloColumnStatus.ACTIVE);
+        // Linked List 연결 업데이트
+        if (prevColumn != null) {
+            prevColumn.updateColumnOrder(prevColumn.getPrevColumn(), column);
+            prevColumn.setNextColumn(column); // prevColumn의 next를 새 컬럼으로 설정
+            columnRepository.save(prevColumn); // prevColumn 저장
+        }
 
-        for (TrelloColumn col : columns) {
-            if (col.getPosition() >= position) {
-                col.updatePosition(col.getPosition() + 1);
-            }
+        if (nextColumn != null) {
+            nextColumn.updateColumnOrder(column, nextColumn.getNextColumn());
+            nextColumn.setPrevColumn(column); // nextColumn의 prev를 새 컬럼으로 설정
+            columnRepository.save(nextColumn); // nextColumn 저장
         }
 
         columnRepository.save(column);
-
-        TrelloColumnResponseDto responseDto = new TrelloColumnResponseDto(column.getTitle());
-
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+        return ResponseEntity.ok("컬럼 생성 성공");
     }
+
 
     @Transactional
     @Override
@@ -98,31 +102,46 @@ public class TrelloColumnServiceImpl implements TrelloColumnService {
 
     @Transactional
     @Override
-    public ResponseEntity<?> moveColumn(Long boardId, Long columnId, int newPosition) {
-        checkBoardAndColumn(boardId, columnId, false);
-        TrelloColumn column = columnRepository.findById(columnId).orElseThrow(
-                () -> new DatabaseAccessException("COLUMN NOT FOUND")
-        );
-        List<TrelloColumn> columns = columnRepository.findByBoardAndStatusOrderByPosition(boardRepository.findById(boardId).get(), TrelloColumnStatus.ACTIVE);
-        TrelloColumn targetColumn = null;
+    public ResponseEntity<?> moveColumn(Long boardId, Long columnId, Long targetPrevColumnId) {
+        TrelloColumn column = columnRepository.findById(columnId)
+                .orElseThrow(() -> new DatabaseAccessException("COLUMN NOT FOUND"));
 
-        for (TrelloColumn col : columns) {
-            if (col.getPosition() == newPosition) {
-                targetColumn = col;
-                break;
-            }
+        TrelloColumn targetPrevColumn = targetPrevColumnId != null
+                ? columnRepository.findById(targetPrevColumnId).orElse(null)
+                : null;
+
+        TrelloColumn targetNextColumn = targetPrevColumn != null
+                ? targetPrevColumn.getNextColumn()
+                : null;
+
+        // 기존 위치에서 컬럼 제거 (기존 prev, next 컬럼의 연결 복구)
+        if (column.getPrevColumn() != null) {
+            column.getPrevColumn().setNextColumn(column.getNextColumn());
+            columnRepository.save(column.getPrevColumn());
+        }
+        if (column.getNextColumn() != null) {
+            column.getNextColumn().setPrevColumn(column.getPrevColumn());
+            columnRepository.save(column.getNextColumn());
         }
 
-        if (targetColumn != null) {
-            int currentPos = column.getPosition();
-            column.updatePosition(newPosition);
-            targetColumn.updatePosition(currentPos);
-            columnRepository.save(column);
-            columnRepository.save(targetColumn);
+        // 새로운 위치에 삽입
+        column.setPrevColumn(targetPrevColumn);
+        column.setNextColumn(targetNextColumn);
+
+        if (targetPrevColumn != null) {
+            targetPrevColumn.setNextColumn(column);
+            columnRepository.save(targetPrevColumn);
         }
-        columnRepository.saveAll(columns);
-        return ResponseEntity.ok("컬럼 위치 이동");
+        if (targetNextColumn != null) {
+            targetNextColumn.setPrevColumn(column);
+            columnRepository.save(targetNextColumn);
+        }
+
+        columnRepository.save(column);
+        return ResponseEntity.ok("컬럼 위치 이동 성공");
     }
+
+
 
     //컬럼 id 찾기
     @Override

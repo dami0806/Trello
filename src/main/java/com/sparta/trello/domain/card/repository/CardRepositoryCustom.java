@@ -5,4 +5,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface CardRepositoryCustom {
     Page<Comment> findCommentsByCardId(Long cardId, Pageable pageable);
+
 }

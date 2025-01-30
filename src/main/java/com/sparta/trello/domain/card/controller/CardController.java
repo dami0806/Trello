@@ -29,10 +29,10 @@ public class CardController {
     public ResponseEntity<CardResponse> createCard(@PathVariable Long boardId,
                                                    @PathVariable Long columnId,
                                                    @RequestBody CardRequest cardRequest,
+                                                   @RequestParam(required = false) Long targetPrevCardId,
                                                    @AuthenticationPrincipal UserDetails userDetails) {
-        checkAuthAndRole(boardId,userDetails);
-
-        CardResponse cardResponse = cardService.createCard(columnId,cardRequest, userDetails.getUsername());
+        checkAuthAndRole(boardId, userDetails);
+        CardResponse cardResponse = cardService.createCard(columnId, cardRequest, targetPrevCardId, userDetails.getUsername());
         return new ResponseEntity<>(cardResponse, HttpStatus.CREATED);
     }
 
@@ -61,18 +61,18 @@ public class CardController {
         return new ResponseEntity<>("카드 삭제하기 성공", HttpStatus.OK);
     }
 
-    //카드 위치 변경 (인덱스 상, TrelloColumn에서 변경)
+    // 카드 위치 변경 (Linked List 기반)
     @PutMapping("/{cardId}/position")
     public ResponseEntity<String> updateCardPosition(@PathVariable Long boardId,
                                                      @PathVariable Long columnId,
                                                      @PathVariable Long cardId,
-                                                     @RequestParam int newPosition, @RequestParam Long newColumnId,
+                                                     @RequestParam(required = false) Long targetPrevCardId,
+                                                     @RequestParam Long newColumnId,
                                                      @AuthenticationPrincipal UserDetails userDetails) {
-        checkAuthAndRole(boardId,userDetails);
-        cardService.updateCardPosition(cardId, newPosition, newColumnId);
+        checkAuthAndRole(boardId, userDetails);
+        cardService.updateCardPosition(cardId, targetPrevCardId, newColumnId);
         return new ResponseEntity<>("카드 위치 옮기기 성공", HttpStatus.OK);
     }
-
     // 카드 상세 보기
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{cardId}")

@@ -10,17 +10,14 @@ import com.sparta.trello.domain.common.entity.BaseEntity;
 
 import com.sparta.trello.domain.common.util.OrderConverter;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 public class TrelloColumn extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,14 +46,23 @@ public class TrelloColumn extends BaseEntity {
 	@Column(nullable = false)
 	private TrelloColumnStatus status = TrelloColumnStatus.ACTIVE;
 
+	@ManyToOne
+	@JoinColumn(name = "prev_column_id")
+	private TrelloColumn prevColumn;
 
+	@ManyToOne
+	@JoinColumn(name = "next_column_id")
+	private TrelloColumn nextColumn;
+
+	public void updateColumnOrder(TrelloColumn prev, TrelloColumn next) {
+		this.prevColumn = prev;
+		this.nextColumn = next;
+	}
 	public void removeCard(Long cardId) {
 		cardOrder.remove(cardId);
 	}
 
-	public void updateCardOrder(List<Long> newCardOrder) {
-		this.cardOrder = newCardOrder;
-	}
+
 
 	public void softDelete() {
 		this.status = TrelloColumnStatus.DELETED;

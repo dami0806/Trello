@@ -1,11 +1,9 @@
 package com.sparta.trello.domain.board.controller;
 
-import com.sparta.trello.domain.auth.service.UserService;
 import com.sparta.trello.domain.board.dto.request.BoardRequest;
 import com.sparta.trello.domain.board.dto.response.BoardResponse;
 import com.sparta.trello.domain.board.service.BoardService;
 import com.sparta.trello.domain.boardInvitaion.dto.BoardInvitationRequest;
-import com.sparta.trello.domain.common.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +25,7 @@ public class BoardController {
         BoardResponse response = boardService.createBoard(boardRequest, username);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
     //수정
     @PatchMapping("/{boardId}")
     public ResponseEntity<BoardResponse> updateBoard(@PathVariable Long boardId, @RequestBody BoardRequest boardRequest,
@@ -53,6 +52,4 @@ public class BoardController {
         boardService.inviteUserToBoard(boardId, invitationRequest, userDetails.getUsername());
         return new ResponseEntity<>("초대 성공", HttpStatus.OK);
     }
-
-
 }

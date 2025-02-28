@@ -1,4 +1,7 @@
-# Trello - Backend ReadMe
+# 🗓️ Trello 
+
+
+<img width="1374" alt="image" src="https://github.com/user-attachments/assets/fb0e54fc-7bbb-4635-83f5-aa259fd0ca44" />
 
 ## 📌 프로젝트 개요
 - **프로젝트 기간**: 2024.06.03 ~ 2024.06.10

@@ -1,4 +1,4 @@
-# ✅ Trello - Backend ReadMe
+# Trello - Backend ReadMe
 
 ## 📌 프로젝트 개요
 - **프로젝트 기간**: 2024.06.03 ~ 2024.06.10
@@ -14,7 +14,7 @@
 
 ## 🚀 주요 기능
 - **사용자 관리**: 회원가입, 로그인, 권한 부여 (Manager, Member)
-- **보드 관리**: 보드 생성, 초대, 사용자 목록 조회
+- **보드 관리**: 보드 생성, 초대, 초대할 사용자 목록 조회
 - **컬럼 관리**: 컬럼 추가, 이동, 삭제
 - **카드 관리**: 카드 추가, 이동, 삭제, 댓글 기능 지원
 - **권한 관리**: AOP 기반 접근 제어 및 Role 기반 인증 처리
@@ -41,7 +41,7 @@
 | 개선 후          | 개선 후                     |
 |-----------------|-----------------
 |**매니저 확**인 |<img width="600" alt="image" src="https://github.com/user-attachments/assets/eea69147-25e9-452f-b123-cdb0b497fe03"> |
-|**accepted인 member인지/ Manager인지 확인** |<img width="700" alt="image" src="https://github.com/user-attachments/assets/4c8f2bae-b6a7-468e-9096-73330a1cf315">|
+|**member인지/ Manager인지 확인** |<img width="700" alt="image" src="https://github.com/user-attachments/assets/4c8f2bae-b6a7-468e-9096-73330a1cf315">|
 | **초대된 사용자인지 여부 확인** |<img width="700" alt="image" src="https://github.com/user-attachments/assets/b007b30a-dbe6-4bdb-a901-4de4b681c67b"> |
 |**카드 순서 관리 성능 문제 및 비정규화 도입** |<img width="700" alt="image" src="https://github.com/user-attachments/assets/a354d877-5982-43d8-ab8d-a20974ecf890">  |
 

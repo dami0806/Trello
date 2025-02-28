@@ -30,6 +30,20 @@
 ---
 
 ## ⚡️ 성능 개선
+
+### **카드 순서 관리 및 성능 최적화**  
+**기존 방식의 문제점**  
+ - 각 카드가 개별적으로 위치를 관리 → 모든 카드의 위치를 업데이트해야 하는 성능 저하 발생  
+  - 대량의 데이터가 수정될 경우, 데이터베이스 부하 증가  
+
+**개선 방식**  
+ - **중앙에서 카드 위치를 관리** → 불필요한 업데이트 최소화  
+  - **트랜잭션 단위 최적화** → 변경 사항이 있을 때만 업데이트 수행  
+
+| 개선 후          | 개선 후                     |
+|-----------------|----------------------------------|
+|<img width="482" alt="image" src="https://github.com/user-attachments/assets/801c8bc9-8621-4b49-9b33-7cb23fd6b8c0" /> | <img width="445" alt="image" src="https://github.com/user-attachments/assets/23a7c0e1-c103-4f06-a45f-e71059f4e9cd" />  |
+
 ###  **쿼리 최적화 및 인덱싱 적용**
 - **기존 fetchCount() 사용** → fetchOne() + select(qComment.count()) @BatchSize(size = 10)
 - **N+1 문제 해결**: Fetch Join, EntityGraph, BatchSize 적용
@@ -47,20 +61,6 @@
 |**member인지/ Manager인지 확인** |<img width="700" alt="image" src="https://github.com/user-attachments/assets/4c8f2bae-b6a7-468e-9096-73330a1cf315">|
 | **초대된 사용자인지 여부 확인** |<img width="700" alt="image" src="https://github.com/user-attachments/assets/b007b30a-dbe6-4bdb-a901-4de4b681c67b"> |
 |**카드 순서 관리 성능 문제 및 비정규화 도입** |<img width="700" alt="image" src="https://github.com/user-attachments/assets/a354d877-5982-43d8-ab8d-a20974ecf890">  |
-
-
-### **카드 순서 관리 및 성능 최적화**  
-**기존 방식의 문제점**  
- - 각 카드가 개별적으로 위치를 관리 → 모든 카드의 위치를 업데이트해야 하는 성능 저하 발생  
-  - 대량의 데이터가 수정될 경우, 데이터베이스 부하 증가  
-
-**개선 방식**  
- - **중앙에서 카드 위치를 관리** → 불필요한 업데이트 최소화  
-  - **트랜잭션 단위 최적화** → 변경 사항이 있을 때만 업데이트 수행  
-
-| 개선 후          | 개선 후                     |
-|-----------------|----------------------------------|
-|<img width="482" alt="image" src="https://github.com/user-attachments/assets/801c8bc9-8621-4b49-9b33-7cb23fd6b8c0" /> | <img width="445" alt="image" src="https://github.com/user-attachments/assets/23a7c0e1-c103-4f06-a45f-e71059f4e9cd" />  |
 
 ---
 

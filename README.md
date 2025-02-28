@@ -40,7 +40,7 @@
 > - N+1 문제를 해결하기 위해 Fetch Join 및 BatchSize를 활용  
 > - 카드 및 컬럼 이동 시 복합 인덱스를 적용하여 검색 속도 개선  
 
-### **BoardRepositoryCustomImpl의 역할**
+### sql로 인한 성능 개선(인덱스 사용 및 sql개선후 explain으로 확인)
 | 개선 후          | 개선 후                     |
 |-----------------|-----------------
 |**매니저 확**인 |<img width="600" alt="image" src="https://github.com/user-attachments/assets/eea69147-25e9-452f-b123-cdb0b497fe03"> |

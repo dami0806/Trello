@@ -55,7 +55,7 @@
 - 카드 및 컬럼 이동 시 복합 인덱스를 적용하여 검색 속도 개선  
 
 ### sql로 인한 성능 개선(인덱스 사용 및 sql개선후 explain으로 확인)
-| 개선 후          | 개선 후                     |
+| 설명          | explain 개선결과                     |
 |-----------------|-----------------
 |**매니저 확**인 |<img width="600" alt="image" src="https://github.com/user-attachments/assets/eea69147-25e9-452f-b123-cdb0b497fe03"> |
 |**member인지/ Manager인지 확인** |<img width="700" alt="image" src="https://github.com/user-attachments/assets/4c8f2bae-b6a7-468e-9096-73330a1cf315">|

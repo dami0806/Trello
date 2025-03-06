@@ -8,10 +8,70 @@
 ## 📌 프로젝트 개요
 - **프로젝트 기간**: 2024.06.03 ~ 2024.06.10
 - **프로젝트 설명**: 칸반 보드 기반의 프로젝트 관리 시스템 개발
-- **기술 스택**: Java, Spring Boot, Spring Security, JPA, MySQL, QueryDSL, RabbitMQ, MapperStruct
 
 ---
 
+## 기술 스택 백엔드  
+<div align=left>
+    <img src="https://img.shields.io/badge/JDK%2021-E38836?style=flat-square&logo=openJdk&logoColor=white" style="margin-right: 2px;">
+    <img src="https://img.shields.io/badge/Spring%20Boot%203.4.2-6DB33F?style=flat-square&logo=springboot&logoColor=white" style="margin-right: 2px;">
+    <img src="https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=flat-square&logo=spring&logoColor=white">
+</div>
+
+<div align=left>
+     <img src="https://img.shields.io/badge/QueryDSL%20Compose-2496ED?style=flat-square&logo=docker&logoColor=white">
+     <img src="https://img.shields.io/badge/Jpql-6DB33F?style=flat-square&logo=spring&logoColor=white" style="margin-right: 2px;">
+    <img src="https://img.shields.io/badge/Spring%20Security-6DB33F?style=flat-square&logo=springsecurity&logoColor=white" style="margin-right: 2px;">
+</div>
+
+<div align=left>
+    <img src="https://img.shields.io/badge/MapperStruct-6DB33F?style=flat-square&logo=spring&logoColor=white" style="margin-right: 2px;">
+    <img src="https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=gradle&logoColor=white">
+</div>
+
+---
+
+### 데이터베이스  
+<div align=left>
+    <img src="https://img.shields.io/badge/MySQL%208-08668E?style=flat-square&logo=mysql&logoColor=white" style="margin-right: 2px;">
+    <img src="https://img.shields.io/badge/Redis-FF0000?style=flat-square&logo=redis&logoColor=white">
+</div>
+
+
+### 테스트  
+<div align=left>
+    <img src="https://img.shields.io/badge/JUnit%205-25A162?style=flat-square&logo=junit5&logoColor=white" style="margin-right: 2px;">
+    <img src="https://img.shields.io/badge/JMeter-D22128?style=flat-square&logo=apachejmeter&logoColor=white" style="margin-right: 2px;">
+    <img src="https://img.shields.io/badge/Jacoco-6DB33F?style=flat-square">
+</div>
+
+
+### 모니터링  
+<p align="left">
+    <img src="https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white" style="margin-right: 2px;">
+    <img src="https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white" style="margin-right: 2px;">
+    <img src="https://img.shields.io/badge/Grafana%20Loki-FF9900?style=flat-square&logo=grafana&logoColor=white">
+</p>
+
+### 문서  
+<div align=left>
+    <img src="https://img.shields.io/badge/Swagger-85EA2D?style=flat-square&logo=swagger&logoColor=black">
+</div>
+
+
+### 인프라  
+<div align=left>
+    <img src="https://img.shields.io/badge/AWS%20EC2-FF9900?style=flat-square&logo=amazonec2&logoColor=white" style="margin-right: 2px;">
+    <img src="https://img.shields.io/badge/AWS%20RDS-527FFF?style=flat-square&logo=amazonrds&logoColor=white" style="margin-right: 2px;">
+</div>
+
+<div align=left>
+    <img src="https://img.shields.io/badge/AWS%20S3-44B8A1?style=flat-square&logo=amazonaws&logoColor=white" style="margin-right: 2px;">
+    <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" style="margin-right: 2px;">
+</div>
+
+
+---
 ## 🔧 아키텍처 구성
 [아키텍처 다이어그램 필요]
 

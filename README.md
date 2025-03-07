@@ -19,8 +19,8 @@
 </div>
 
 <div align=left>
-     <img src="https://img.shields.io/badge/QueryDSL%20Compose-2496ED?style=flat-square&logo=docker&logoColor=white">
-     <img src="https://img.shields.io/badge/Jpql-6DB33F?style=flat-square&logo=spring&logoColor=white" style="margin-right: 2px;">
+     <img src="https://img.shields.io/badge/QueryDSL-9968FF?style=flat-square&logoColor=white">
+     <img src="https://img.shields.io/badge/Jpql-0769AD?style=flat-square&logo=jquery&logoColor=white" style="margin-right: 2px;">
     <img src="https://img.shields.io/badge/Spring%20Security-6DB33F?style=flat-square&logo=springsecurity&logoColor=white" style="margin-right: 2px;">
 </div>
 
@@ -40,18 +40,8 @@
 
 ### 테스트  
 <div align=left>
-    <img src="https://img.shields.io/badge/JUnit%205-25A162?style=flat-square&logo=junit5&logoColor=white" style="margin-right: 2px;">
     <img src="https://img.shields.io/badge/JMeter-D22128?style=flat-square&logo=apachejmeter&logoColor=white" style="margin-right: 2px;">
-    <img src="https://img.shields.io/badge/Jacoco-6DB33F?style=flat-square">
 </div>
-
-
-### 모니터링  
-<p align="left">
-    <img src="https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white" style="margin-right: 2px;">
-    <img src="https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white" style="margin-right: 2px;">
-    <img src="https://img.shields.io/badge/Grafana%20Loki-FF9900?style=flat-square&logo=grafana&logoColor=white">
-</p>
 
 ### 문서  
 <div align=left>
